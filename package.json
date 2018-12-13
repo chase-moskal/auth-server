@@ -5,7 +5,12 @@
 	"description": "example standalone auth server",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"prepare": "run-s clean build test",
+		"clean": "rm -rf dist && mkdir dist",
+		"build": "tsc",
+		"watch": "tsc -w",
+		"start": "node dist/main",
+		"test": "exit 0"
 	},
 	"keywords": [],
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
@@ -19,7 +24,7 @@
 	},
 	"homepage": "https://github.com/chase-moskal/authoritarian-client#readme",
 	"dependencies": {
-		"authoritarian": "file:../authoritarian/authoritarian-0.0.0-dev.1.tgz",
+		"authoritarian": "file:../authoritarian",
 		"koa": "2.6.2",
 		"koa-router": "7.4.0"
 	},
