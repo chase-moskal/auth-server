@@ -5,6 +5,6 @@
 	"google": {
 		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com",
 		"clientSecret": "ZbQ_ADbgMca4YJ5KWcR0FNLA",
-		"callbackUrl": "http://localhost:8080/auth/google-complete"
+		"callbackUrl": ""
 	}
 }
