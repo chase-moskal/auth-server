@@ -49,6 +49,11 @@ async function auth() {
  * Render google sign-in button
  */
 async function renderGoogleSignInButton() {
+
+	// TODO -- perhaps this shouldn't be a promise?
+	// it's a coincidence this works as a promise, because the page is refreshed
+	// after each login attempt, such that there is never more than one attempt.
+	// it might be smarter to allow multiple logins attempts...
 	return new Promise<gapi.auth2.GoogleUser>((resolve, reject) => {
 		gapi.signin2.render("google-signin", {
 			onsuccess: resolve,
