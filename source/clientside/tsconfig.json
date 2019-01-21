@@ -1,16 +1,13 @@
 {
 	"compilerOptions": {
 		"baseUrl": ".",
-		"rootDir": "source",
-		"outDir": "dist",
-		"target": "es6",
-		"lib": ["es6"],
+		"rootDir": ".",
+		"outDir": "../../dist/clientside",
+		"target": "es5",
+		"lib": ["es6", "dom"],
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"experimentalDecorators": true,
 		"sourceMap": true
-	},
-	"exclude": [
-		"source/clientside"
-	]
+	}
 }

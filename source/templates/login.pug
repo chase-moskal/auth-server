@@ -4,7 +4,7 @@ html
 	head
 		meta(charset="utf-8")
 		title Login
-		script(src="https://apis.google.com/js/platform.js?onload=main" async defer)
+		script(src="https://apis.google.com/js/platform.js?onload=loginScript" async defer)
 
 	body
 		h1 Login
@@ -12,64 +12,8 @@ html
 		a(id="google-signout" href="#" onclick="signOut()" style="display: none;") Sign out
 
 		script.
-
-			// copied google configuration
-			const config = {
+			window.details = {
 				clientId: "#{locals.clientId}",
 				redirectUri: "#{locals.redirectUri}"
 			}
-
-			// initiate loading of the google platform
-			// kick off authentication routine
-			function main() {
-				gapi.load("auth2", () => {
-					const googleAuth = gapi.auth2.init({
-						ux_mode: "redirect",
-						client_id: config.clientId,
-						redirect_uri: config.redirectUri
-					})
-					googleAuth
-						.then(() => keepSignOutButtonUpdated(googleAuth))
-						.then(() => auth(googleAuth))
-						.catch(error => {
-							error.message = "google auth error: " + error.message
-							console.error(error)
-						})
-				})
-			}
-
-			// logout button only appears when logged in
-			function keepSignOutButtonUpdated(googleAuth) {
-				const button = document.querySelector("#google-signout")
-				const updateLogoutButton = isSignedIn => button.style.display = isSignedIn
-					? "block"
-					: "none"
-				updateLogoutButton(googleAuth.isSignedIn.get())
-				googleAuth.isSignedIn.listen(updateLogoutButton)
-			}
-
-			// perform authentication
-			function auth(googleAuth) {
-				return renderGoogleButton()
-					.then(googleUser => {
-						const token = googleUser.getAuthResponse().id_token
-						console.log("token", token)
-						// call to /auth/n
-					})
-			}
-
-			// render the google sign-in button
-			function renderGoogleButton() {
-				return new Promise((resolve, reject) => {
-					gapi.signin2.render("google-signin", {
-						onsuccess: resolve,
-						onfailure: reject
-					})
-				})
-			}
-
-			// function to sign the user out of google
-			function signOut() {
-				const googleAuth = gapi.auth2.getAuthInstance()
-				return googleAuth.signOut()
-			}
+		script(src="login-script.bundle.js")

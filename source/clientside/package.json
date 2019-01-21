@@ -1,0 +1,16 @@
+{
+	"private": true,
+	"name": "auth-server-clientside",
+	"version": "0.0.0-dev.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "exit 0"
+	},
+	"keywords": [],
+	"author": "Chase Moskal <chasemoskal@gmail.com>",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/gapi.auth2": "0.0.48"
+	}
+}
