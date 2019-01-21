@@ -14,7 +14,7 @@ Authentication and authorization solution for microservices and the web
 
 - node auth server using `authoritarian` library
 - conforms to google's oauth workflow to enable google sign-in
-- has an auth endpoint which decodes a googleToken, queries the user database, and returns a signed userToken to the user's browser
+- has an auth endpoint which decodes a googleToken, queries the user database, and returns a signed userToken to the user's browser.  
 	the user can now make api requests which can be validated by any api which shares the secret key
 - user public data is encoded in the userToken
 - user can update some of their data

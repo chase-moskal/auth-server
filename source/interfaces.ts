@@ -9,7 +9,9 @@ export interface AuthServerConfig {
 }
 
 export interface GoogleConfig {
+	scope: string
 	clientId: string
 	clientSecret: string
 	callbackUrl: string
+	redirectUri: string
 }

@@ -7,28 +7,26 @@ import {readFile} from "authoritarian"
 import {GoogleConfig} from "../interfaces"
 import {QueryUserByGoogleId} from "./interfaces"
 
-
 export async function prepareAuthServer({google, queryUserByGoogleId}: {
 	google: GoogleConfig
 	queryUserByGoogleId: QueryUserByGoogleId
 }): Promise<Koa> {
+
 	const server = new Koa()
 	const authRouter = new Router()
 
 	const templates = {
-		authGoogle: pug.compile(await readFile("source/templates/auth-google.pug"))
+		login: pug.compile(await readFile("source/templates/login.pug"))
 	}
 
-	authRouter.get("/auth/google", async context => {
-		console.log("/auth/google")
-		const html = templates.authGoogle({clientId: google.clientId})
+	authRouter.get("/auth/login", async context => {
+		console.log("/auth/login")
+		const html = templates.login(google)
 		context.response.body = html
 	})
 
-	authRouter.get("/auth/google-complete", async context => {
-		console.log("/auth/google-complete")
-		const html = templates.authGoogle({clientId: google.clientId})
-		context.response.body = html
+	authRouter.post("/auth/n", async context => {
+		console.log("/auth/n")
 	})
 
 	server.use(authRouter.routes())
