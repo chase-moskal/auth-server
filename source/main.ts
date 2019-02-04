@@ -1,5 +1,5 @@
 
-import {readJson} from "authoritarian"
+import {readJson} from "fancyfs"
 
 import {Config} from "./interfaces"
 import {prepareAuthServer} from "./modules/prepare-auth-server"

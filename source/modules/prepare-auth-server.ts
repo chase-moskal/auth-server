@@ -1,10 +1,10 @@
 
 import * as pug from "pug"
 import * as Koa from "koa"
+import {readFile} from "fancyfs"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import * as Router from "koa-router"
-import {readFile} from "authoritarian"
 import * as bodyParser from "koa-bodyparser"
 import {OAuth2Client} from "google-auth-library"
 
