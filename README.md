@@ -43,6 +43,17 @@ Authentication and authorization solution for microservices and the web
 }
 ```
 
+## functionality
+
+- json api
+	- authenticateWithGoogle
+	- authorize
+- tokens api (crosscall iframe host)
+	- obtainAccessToken
+	- clearTokens
+- login api (crosscall popup host)
+	- waitForAccessToken
+
 ## notes about google auth
 
 ### frontend work
