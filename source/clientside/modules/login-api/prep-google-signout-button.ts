@@ -1,5 +1,5 @@
 
-import {GoogleAuthFixed} from "../interfaces"
+import {GoogleAuthFixed} from "../../interfaces"
 
 /**
  * Prepare the sign-out button functionality

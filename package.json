@@ -10,7 +10,9 @@
 		"prepare": "run-s clean && run-p build-server build-clientside && run-s test",
 		"clean": "rm -rf dist && mkdir dist",
 		"build-server": "tsc",
-		"build-clientside": "tsc -p source/clientside && browserify dist/clientside/login-script.js > dist/clientside/login-script.bundle.js",
+		"build-clientside": "tsc -p source/clientside && run-p build-clientside-login-script build-clientside-token-script",
+		"build-clientside-login-script": "browserify dist/clientside/login-script.js > dist/clientside/login-script.bundle.js",
+		"build-clientside-token-script": "browserify dist/clientside/token-script.js > dist/clientside/token-script.bundle.js",
 		"watch": "tsc -w",
 		"start": "node dist/main",
 		"test": "exit 0"

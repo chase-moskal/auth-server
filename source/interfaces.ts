@@ -1,7 +1,7 @@
 
 export interface Config {
-	authServer: AuthServerConfig
 	google: GoogleConfig
+	authServer: AuthServerConfig
 }
 
 export interface AuthServerConfig {
@@ -11,7 +11,7 @@ export interface AuthServerConfig {
 export interface GoogleConfig {
 	scope: string
 	clientId: string
-	clientSecret: string
 	callbackUrl: string
 	redirectUri: string
+	clientSecret: string
 }

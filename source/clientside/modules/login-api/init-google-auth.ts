@@ -1,5 +1,5 @@
 
-import {Details, GoogleAuthFixed} from "../interfaces"
+import {Details, GoogleAuthFixed} from "../../interfaces"
 
 /**
  * Initialize google auth
