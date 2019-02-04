@@ -12,5 +12,8 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@types/gapi.auth2": "0.0.48"
+	},
+	"dependencies": {
+		"crosscall": "file:../../../crosscall/crosscall-0.0.6-dev.0.tgz"
 	}
 }

@@ -7,6 +7,6 @@
 		"clientSecret": "ZbQ_ADbgMca4YJ5KWcR0FNLA",
 		"callbackUrl": "",
 		"scope": "profile email",
-		"redirectUri": "http://localhost:8080/auth/login"
+		"redirectUri": "http://localhost:8080/login"
 	}
 }

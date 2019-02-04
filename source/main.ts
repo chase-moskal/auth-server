@@ -12,6 +12,11 @@ import {OAuth2Client} from "google-auth-library"
 import {Config} from "./interfaces"
 import {createAuthApi} from "./modules/create-auth-api"
 
+const getTemplate = async(filename: string) =>
+	pug.compile(await readFile(`source/clientside/templates/${filename}`))
+
+main().catch(error => console.error(error))
+
 export async function main() {
 	const config = await readJson<Config>("config.json")
 
@@ -19,33 +24,35 @@ export async function main() {
 	// setup boring stuff
 	//
 
+	const oAuth2Client = new OAuth2Client(config.google.clientId)
+
 	const authRouter = new Router()
 	authRouter.use(bodyParser())
-	const oAuth2Client = new OAuth2Client(config.google.clientId)
-	const templates = {
-		login: pug.compile(await readFile("source/templates/login.pug"))
-	}
+
 	const authApi = createAuthApi({
 		googleClientId: config.google.clientId,
 		oAuth2Client
 	})
 
+	const templates = {
+		login: await getTemplate("login.pug"),
+		token: await getTemplate("token.pug")
+	}
+
 	//
 	// token api
 	//
 
-	// // serve up the token page (which has the crosscall TokenApi)
-	// authRouter.get("/token", async context => {
-	// 	console.log("/token")
-	// 	const html = templates.token()
-	// 	context.response.body = html
-	// })
+	authRouter.get("/token", async context => {
+		console.log("/token")
+		const html = templates.token()
+		context.response.body = html
+	})
 
 	//
 	// login api
 	//
 
-	// serve up the login page (which has the crosscall LoginApi)
 	authRouter.get("/login", async context => {
 		console.log("/login")
 		const html = templates.login(config.google)
@@ -56,7 +63,6 @@ export async function main() {
 	// auth api
 	//
 
-	// serve up the auth api
 	authRouter.post("/auth", async context => {
 		const body = context.request.body
 		const method = body.method
@@ -74,12 +80,13 @@ export async function main() {
 		}
 	})
 
-	// run the koa server
+	//
+	// run the koa server app
+	//
+
 	const app = new Koa()
 	app.use(authRouter.middleware())
-	app.use(mount("/auth", serve("dist/clientside")))
+	app.use(mount("/", serve("dist/clientside")))
 	app.listen(config.authServer.port)
 	console.log(`Auth server listening on port ${config.authServer.port}`)
 }
-
-main().catch(error => console.error(error))
