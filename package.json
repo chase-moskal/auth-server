@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"name": "auth-server",
-	"version": "0.0.0-dev.0",
+	"version": "0.0.0-dev.1",
 	"description": "example standalone auth server",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
