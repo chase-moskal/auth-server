@@ -1,11 +1,11 @@
 
 import * as pug from "pug"
 import * as Koa from "koa"
+import {readFile} from "fancyfs"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import * as Router from "koa-router"
 import {AuthTokens} from "authoritarian"
-import {readFile, readJson} from "fancyfs"
 import * as bodyParser from "koa-bodyparser"
 import {OAuth2Client} from "google-auth-library"
 
@@ -13,12 +13,12 @@ import {Config} from "./interfaces"
 import {createAuthApi} from "./modules/create-auth-api"
 
 const getTemplate = async(filename: string) =>
-	pug.compile(await readFile(`source/clientside/templates/${filename}`))
+	pug.compile(<string>await readFile(`source/clientside/templates/${filename}`, "utf8"))
 
 main().catch(error => console.error(error))
 
 export async function main() {
-	const config = await readJson<Config>("config.json")
+	const config: Config = JSON.parse(<string>await readFile("config.json", "utf8"))
 
 	//
 	// setup boring stuff
