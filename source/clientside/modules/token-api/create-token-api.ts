@@ -1,7 +1,7 @@
 
-import {TokenApi, AccessToken} from "authoritarian"
+import {TokenTopic, AccessToken} from "authoritarian"
 
-export const createTokenApi = (): TokenApi => ({
+export const createTokenApi = (): TokenTopic => ({
 
 	async obtainAccessToken(): Promise<AccessToken> {
 		return "a123"

@@ -1,7 +1,7 @@
 
-import {LoginApi, AccessToken} from "authoritarian"
+import {LoginTopic, AccessToken} from "authoritarian"
 
-export const createLoginApi = (): LoginApi => ({
+export const createLoginApi = (): LoginTopic => ({
 	async userLoginRoutine(): Promise<AccessToken> {
 		return "a123"
 	}

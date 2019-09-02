@@ -1,13 +1,13 @@
 
 import {OAuth2Client} from "google-auth-library"
-import {AuthApi, RefreshToken, AuthTokens, AccessToken} from "authoritarian"
+import {AuthTopic, RefreshToken, AuthTokens, AccessToken} from "authoritarian"
 
 import {verifyGoogleIdToken} from "./verify-google-id-token"
 
 export const createAuthApi = ({googleClientId, oAuth2Client}: {
 	googleClientId: string
 	oAuth2Client: OAuth2Client
-}): AuthApi => ({
+}): AuthTopic => ({
 
 	/**
 	 * Authenticate with google
