@@ -1,8 +1,8 @@
 
 import {LoginTopic, AccessToken} from "authoritarian"
 
-export const createLoginApi = (): LoginTopic => ({
+export class LoginService implements LoginTopic {
 	async userLoginRoutine(): Promise<AccessToken> {
 		return "a123"
 	}
-})
+}

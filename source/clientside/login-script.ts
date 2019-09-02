@@ -1,7 +1,7 @@
 
 import {Details} from "./interfaces"
-import {initGoogleAuth} from "./modules/login-api/init-google-auth"
-import {prepGoogleSignOutButton} from "./modules/login-api/prep-google-signout-button"
+import {initGoogleAuth} from "./modules/login-tools/init-google-auth"
+import {prepGoogleSignOutButton} from "./modules/login-tools/prep-google-signout-button"
 
 declare global {
 	interface Window {
