@@ -1,11 +1,16 @@
 
-import {TokenTopic, AccessToken, AuthTokens} from "authoritarian"
+import {TokenTopic, AccessToken, AuthTokens, AuthTopic} from "authoritarian"
 
 export class TokenService implements TokenTopic {
 	private _storage: Storage
+	private _authService: AuthTopic
 
-	constructor(options: {storage: Storage}) {
+	constructor(options: {
+		storage: Storage
+		authService: AuthTopic
+	}) {
 		this._storage = options.storage
+		this._authService = options.authService
 	}
 
 	async writeTokens({accessToken, refreshToken}: AuthTokens): Promise<void> {
@@ -19,6 +24,6 @@ export class TokenService implements TokenTopic {
 	}
 
 	async passiveCheck(): Promise<AccessToken> {
-		return "a123"
+		return null
 	}
 }
