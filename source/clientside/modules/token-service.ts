@@ -24,6 +24,20 @@ export class TokenService implements TokenTopic {
 	}
 
 	async passiveCheck(): Promise<AccessToken> {
-		return null
+		let accessToken = this._storage.getItem("accessToken")
+		let refreshToken = this._storage.getItem("refreshToken")
+
+		if (!accessToken) {
+			if (refreshToken) {
+				accessToken = await this._authService.authorize({refreshToken})
+			}
+			else {
+				accessToken = null
+			}
+		}
+
+		await this.writeTokens({accessToken, refreshToken})
+
+		return accessToken
 	}
 }
