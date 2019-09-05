@@ -1,5 +1,5 @@
 
-export interface Details {
+export interface GoogleAuthDetails {
 	clientId: string
 	redirectUri: string
 }

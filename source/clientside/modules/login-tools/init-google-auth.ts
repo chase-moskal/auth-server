@@ -1,16 +1,16 @@
 
-import {Details, GoogleAuthFixed} from "../../interfaces"
+import {GoogleAuthDetails, GoogleAuthFixed} from "../../interfaces"
 
 /**
  * Initialize google auth
  */
-export async function initGoogleAuth(details: Details) {
+export async function initGoogleAuth({clientId, redirectUri}: GoogleAuthDetails) {
 	return new Promise<GoogleAuthFixed>((resolve, reject) => {
 		gapi.load("auth2", () => {
 			const googleAuth = gapi.auth2.init({
 				ux_mode: "redirect",
-				client_id: details.clientId,
-				redirect_uri: details.redirectUri
+				client_id: clientId,
+				redirect_uri: redirectUri
 			})
 			googleAuth.then(
 				() => resolve(fixGoogleAuth(googleAuth)),
