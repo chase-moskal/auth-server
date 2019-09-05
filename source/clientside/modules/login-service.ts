@@ -1,30 +1,30 @@
 
-import {LoginTopic, AccessToken} from "authoritarian"
+import {LoginTopic, AuthTopic, TokenTopic, AccessToken} from "authoritarian"
 
-import {GoogleAuthDetails} from "../interfaces"
-import {initGoogleAuth} from "./login-tools/init-google-auth"
-import {prepGoogleSignOutButton} from "./login-tools/prep-google-signout-button"
+import {GoogleMagic} from "./google-magic"
 
 export class LoginService implements LoginTopic {
-	private _googleAuthDetails: GoogleAuthDetails
+	private _authService: AuthTopic
+	private _tokenService: TokenTopic
+	private _googleMagic: GoogleMagic
 
-	constructor(options: {googleAuthDetails: GoogleAuthDetails}) {
-		this._googleAuthDetails = options.googleAuthDetails
+	constructor(options: {
+		authService: AuthTopic
+		googleMagic: GoogleMagic
+		tokenService: TokenTopic
+	}) {
+		this._authService = options.authService
+		this._googleMagic = options.googleMagic
+		this._tokenService = options.tokenService
 	}
 
 	async userLoginRoutine(): Promise<AccessToken> {
-
-		// TODO wait until google platform loads
-
-		const googleAuth = await initGoogleAuth(this._googleAuthDetails)
-
-		prepGoogleSignOutButton({
+		const googleAuth = await this._googleMagic.initGoogleAuth()
+		this._googleMagic.prepareGoogleSignOutButton({
 			button: document.querySelector<HTMLDivElement>("#google-signout"),
 			googleAuth
 		})
-
 		await this._auth()
-
 		return "a123"
 	}
 
@@ -36,20 +36,20 @@ export class LoginService implements LoginTopic {
 		const googleToken = googleUser.getAuthResponse().id_token
 		console.log("googleToken", googleToken)
 
-		// // call to /auth
-		// const raw = await fetch("/auth", {
-		// 	method: "POST",
-		// 	headers: {
-		// 		"Accept": "application/json",
-		// 		"Content-Type": "application/json"
-		// 	},
-		// 	body: JSON.stringify({
-		// 		method: "authenticateWithGoogle",
-		// 		googleToken
-		// 	})
-		// })
-		// const response = await raw.json()
-		// console.log("/auth response:", response)
+		// call to /auth
+		const raw = await fetch("/auth", {
+			method: "POST",
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				method: "authenticateWithGoogle",
+				googleToken
+			})
+		})
+		const response = await raw.json()
+		console.log("/auth response:", response)
 	}
 
 	/**

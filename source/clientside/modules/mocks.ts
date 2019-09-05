@@ -1,5 +1,5 @@
 
-import {AuthTopic} from "authoritarian"
+import {AuthTopic, TokenTopic} from "authoritarian"
 
 export class MockStorage implements Storage {
 	getItem = jest.fn()
@@ -13,4 +13,10 @@ export class MockStorage implements Storage {
 export class MockAuthService implements AuthTopic {
 	authorize = jest.fn()
 	authenticateWithGoogle = jest.fn()
+}
+
+export class MockTokenService implements TokenTopic {
+	logout = jest.fn()
+	writeTokens = jest.fn()
+	passiveCheck = jest.fn()
 }
