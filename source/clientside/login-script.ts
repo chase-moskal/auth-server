@@ -2,9 +2,10 @@
 // import {Host as CrosscallHost} from "crosscall"
 
 import {GoogleAuthDetails} from "./interfaces"
-import {GoogleMagic} from "./modules/google-magic"
-import {LoginService} from "./modules/login-service"
-import {MockAuthService, MockTokenService} from "./modules/mocks"
+import {GoogleMagic} from "./services/google-magic"
+import {AuthService} from "./services/auth-service"
+import {LoginService} from "./services/login-service"
+import {TokenService} from "./services/token-service"
 
 declare global {
 	interface Window {
@@ -15,13 +16,19 @@ declare global {
 
 async function loginScript() {
 	const {googleAuthDetails} = window
+	const googleMagic = new GoogleMagic(googleAuthDetails)
+	const authService = new AuthService()
+	const tokenService = new TokenService({
+		authService,
+		storage: window.sessionStorage
+	})
 	const loginService = new LoginService({
-		googleMagic: new GoogleMagic(googleAuthDetails),
-		authService: new MockAuthService(),
-		tokenService: new MockTokenService()
+		googleMagic,
+		authService,
+		tokenService
 	})
 	const token = await loginService.userLoginRoutine()
-	console.log("TOKEN LOL", token)
+	console.log("USER LOGIN ROUTINE COMPLETE", token)
 }
 
 window.loginScript = loginScript

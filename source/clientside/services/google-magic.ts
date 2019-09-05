@@ -2,15 +2,16 @@
 import {GoogleAuthDetails, GoogleAuthFixed} from "../interfaces"
 
 export class GoogleMagic {
+	private _googleAuth: GoogleAuthFixed
 	private _googleAuthDetails: GoogleAuthDetails
 
 	constructor(googleAuthDetails: GoogleAuthDetails) {
 		this._googleAuthDetails = googleAuthDetails
 	}
 
-	async initGoogleAuth(): Promise<GoogleAuthFixed> {
+	async initGoogleAuth(): Promise<void> {
 		const {clientId, redirectUri} = this._googleAuthDetails
-		return new Promise<GoogleAuthFixed>((resolve, reject) => {
+		this._googleAuth = await new Promise<GoogleAuthFixed>((resolve, reject) => {
 			gapi.load("auth2", () => {
 				const googleAuth = gapi.auth2.init({
 					ux_mode: "redirect",
@@ -25,10 +26,8 @@ export class GoogleMagic {
 		})
 	}
 
-	prepareGoogleSignOutButton({button, googleAuth}: {
-		button: HTMLElement
-		googleAuth: GoogleAuthFixed
-	}) {
+	prepareGoogleSignOutButton({button}: {button: HTMLElement}) {
+		const googleAuth = this._googleAuth
 		const updateLogoutButton = (isSignedIn: boolean) =>
 		button.style.display = isSignedIn
 			? "block"
@@ -36,6 +35,20 @@ export class GoogleMagic {
 		updateLogoutButton(googleAuth.isSignedIn.get())
 		googleAuth.isSignedIn.listen(updateLogoutButton)
 		button.onclick = () => googleAuth.signOut()
+	}
+
+	async prepareGoogleSignInButton(): Promise<gapi.auth2.GoogleUser> {
+
+		// TODO -- perhaps this shouldn't be a promise?
+		// it's a coincidence this works as a promise, because the page is refreshed
+		// after each login attempt, such that there is never more than one attempt.
+		// it might be smarter to allow multiple logins attempts...
+		return new Promise<gapi.auth2.GoogleUser>((resolve, reject) => {
+			gapi.signin2.render("google-signin", {
+				onsuccess: resolve,
+				onfailure: reject
+			})
+		})
 	}
 }
 

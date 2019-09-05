@@ -1,6 +1,6 @@
 
 import {TokenService} from "./token-service"
-import {MockAuthService, MockStorage} from "./mocks"
+import {MockAuthService, MockStorage} from "../mocks"
 
 const getTokenServiceWithMocks = () => {
 	const storage = new MockStorage()
