@@ -1,7 +1,8 @@
 
 import {GoogleAuthDetails, GoogleAuthFixed} from "../interfaces"
+import {GoogleMagicTopic} from "../interfaces"
 
-export class GoogleMagic {
+export class GoogleMagic implements GoogleMagicTopic {
 	private _googleAuth: GoogleAuthFixed
 	private _googleAuthDetails: GoogleAuthDetails
 
