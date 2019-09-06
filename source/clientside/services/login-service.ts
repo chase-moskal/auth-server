@@ -1,17 +1,17 @@
 
 import {LoginTopic, AuthTopic, TokenTopic, AccessToken} from "authoritarian"
 
-import {GoogleMagic} from "./google-magic"
+import {GoogleMagicInterface} from "../interfaces"
 
 export class LoginService implements LoginTopic {
 	private _authService: AuthTopic
 	private _tokenService: TokenTopic
-	private _googleMagic: GoogleMagic
+	private _googleMagic: GoogleMagicInterface
 
 	constructor(options: {
 		authService: AuthTopic
-		googleMagic: GoogleMagic
 		tokenService: TokenTopic
+		googleMagic: GoogleMagicInterface
 	}) {
 		this._authService = options.authService
 		this._googleMagic = options.googleMagic

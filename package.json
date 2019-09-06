@@ -14,7 +14,7 @@
 		"build-clientside-token-script": "browserify dist/clientside/token-script.js > dist/clientside/token-script.bundle.js",
 		"watch": "tsc -w",
 		"start": "node dist/main",
-		"test": "jest dist"
+		"test": "jest --verbose dist"
 	},
 	"keywords": [],
 	"repository": {
