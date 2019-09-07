@@ -26,7 +26,7 @@
 	},
 	"homepage": "https://github.com/chase-moskal/authoritarian-client#readme",
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.12",
+		"authoritarian": "0.0.0-dev.13",
 		"crosscall": "0.0.6-dev.3",
 		"express": "^4.17.1",
 		"fancyfs": "^0.1.0",

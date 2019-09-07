@@ -3,9 +3,9 @@
 
 import {GoogleAuthDetails} from "./interfaces"
 import {GoogleMagic} from "./services/google-magic"
-import {AuthService} from "./services/auth-service"
-import {LoginService} from "./services/login-service"
-import {TokenService} from "./services/token-service"
+import {AccountPopup} from "./services/account-popup"
+import {TokenStorage} from "./services/token-storage"
+import {AuthExchanger} from "./services/auth-exchanger"
 
 declare global {
 	interface Window {
@@ -17,17 +17,17 @@ declare global {
 async function loginScript() {
 	const {googleAuthDetails} = window
 	const googleMagic = new GoogleMagic(googleAuthDetails)
-	const authService = new AuthService()
-	const tokenService = new TokenService({
-		authService,
+	const authExchanger = new AuthExchanger()
+	const tokenStorage = new TokenStorage({
+		authExchanger,
 		storage: window.sessionStorage
 	})
-	const loginService = new LoginService({
+	const accountPopup = new AccountPopup({
 		googleMagic,
-		authService,
-		tokenService
+		authExchanger,
+		tokenStorage
 	})
-	const token = await loginService.userLoginRoutine()
+	const token = await accountPopup.login()
 	console.log("USER LOGIN ROUTINE COMPLETE", token)
 }
 
@@ -36,14 +36,14 @@ window.loginScript = loginScript
 // const host = new CrosscallHost({
 // 	callee: {
 // 		topics: {
-// 			loginService: <any>loginService
+// 			AccountPopup: <any>AccountPopup
 // 		},
 // 		events: {}
 // 	},
 // 	permissions: [{
 // 		origin: /^http:\/\/localhost:8080$/,
 // 		allowedTopics: {
-// 			exampleTopic: ["loginService"]
+// 			exampleTopic: ["AccountPopup"]
 // 		},
 // 		allowedEvents: []
 // 	}]

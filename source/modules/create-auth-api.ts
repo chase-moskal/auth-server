@@ -1,19 +1,19 @@
 
 import {OAuth2Client} from "google-auth-library"
-import {AuthTopic, RefreshToken, AuthTokens, AccessToken} from "authoritarian"
+import {AuthExchangerTopic, RefreshToken, AuthTokens, AccessToken} from "authoritarian"
 
 import {verifyGoogleIdToken} from "./verify-google-id-token"
 
 export const createAuthApi = ({googleClientId, oAuth2Client}: {
 	googleClientId: string
 	oAuth2Client: OAuth2Client
-}): AuthTopic => ({
+}): AuthExchangerTopic => ({
 
 	/**
 	 * Authenticate with google
 	 * - user trades their google token in exchange for our auth tokens
 	 */
-	async authenticateWithGoogle({googleToken}: {
+	async authenticateViaGoogle({googleToken}: {
 		googleToken: string
 	}): Promise<AuthTokens> {
 

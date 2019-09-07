@@ -1,14 +1,14 @@
 
-import {AuthTopic} from "authoritarian"
+import {AuthExchangerTopic} from "authoritarian"
 
-export class AuthService implements AuthTopic {
+export class AuthExchanger implements AuthExchangerTopic {
 
 	async authorize({refreshToken}: {refreshToken: string}) {
 		console.log("AuthService authorize", {refreshToken})
 		return "a123"
 	}
 
-	async authenticateWithGoogle({googleToken}: {googleToken: string}) {
+	async authenticateViaGoogle({googleToken}: {googleToken: string}) {
 		console.log("AuthService authenticateWithGoogle", {googleToken})
 
 		// call to /auth

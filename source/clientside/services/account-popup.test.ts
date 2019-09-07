@@ -1,20 +1,20 @@
 
-import {LoginService} from "./login-service"
+import {AccountPopup} from "./account-popup"
 
 import {
-	MockAuthService,
+	MockAuthExchanger,
 	MockGoogleMagic,
-	MockTokenService
+	MockTokenStorage
 } from "../mocks"
 
-function createMocks() {
+function makeMocks() {
 	const googleMagic = new MockGoogleMagic()
-	const authService = new MockAuthService()
-	const tokenService = new MockTokenService()
-	const loginService = new LoginService({
+	const authExchanger = new MockAuthExchanger()
+	const tokenStorage = new MockTokenStorage()
+	const accountPopup = new AccountPopup({
 		googleMagic,
-		authService,
-		tokenService
+		authExchanger,
+		tokenStorage
 	})
 
 	googleMagic.prepareGoogleSignInButton.mockImplementation(async() => {
@@ -27,7 +27,7 @@ function createMocks() {
 		return googleUser
 	})
 
-	authService.authenticateWithGoogle.mockImplementation(async() => {
+	authExchanger.authenticateViaGoogle.mockImplementation(async() => {
 		return {
 			accessToken: "a123",
 			refreshToken: "r123"
@@ -36,18 +36,18 @@ function createMocks() {
 
 	return {
 		googleMagic,
-		authService,
-		tokenService,
-		loginService
+		accountPopup,
+		tokenStorage,
+		authExchanger
 	}
 }
 
-describe("login service", () => {
-	describe("user login routine", () => {
+describe("account popup", () => {
+	describe("login", () => {
 
 		it("given a google token, return an access token", async() => {
-			const {loginService} = createMocks()
-			const accessToken = await loginService.userLoginRoutine()
+			const {accountPopup} = makeMocks()
+			const accessToken = await accountPopup.login()
 			expect(accessToken).toBeTruthy()
 		})
 

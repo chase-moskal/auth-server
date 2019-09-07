@@ -1,16 +1,21 @@
 
-import {TokenTopic, AccessToken, AuthTokens, AuthTopic} from "authoritarian"
+import {
+	AuthTokens,
+	AccessToken,
+	TokenStorageTopic,
+	AuthExchangerTopic
+} from "authoritarian"
 
-export class TokenService implements TokenTopic {
+export class TokenStorage implements TokenStorageTopic {
 	private _storage: Storage
-	private _authService: AuthTopic
+	private _authExchanger: AuthExchangerTopic
 
 	constructor(options: {
 		storage: Storage
-		authService: AuthTopic
+		authExchanger: AuthExchangerTopic
 	}) {
 		this._storage = options.storage
-		this._authService = options.authService
+		this._authExchanger = options.authExchanger
 	}
 
 	async writeTokens({accessToken, refreshToken}: AuthTokens): Promise<void> {
@@ -18,7 +23,7 @@ export class TokenService implements TokenTopic {
 		this._storage.setItem("refreshToken", refreshToken)
 	}
 
-	async logout(): Promise<void> {
+	async clearTokens(): Promise<void> {
 		this._storage.removeItem("accessToken")
 		this._storage.removeItem("refreshToken")
 	}
@@ -29,7 +34,7 @@ export class TokenService implements TokenTopic {
 
 		if (!accessToken) {
 			if (refreshToken) {
-				accessToken = await this._authService.authorize({refreshToken})
+				accessToken = await this._authExchanger.authorize({refreshToken})
 			}
 			else {
 				accessToken = null

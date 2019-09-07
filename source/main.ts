@@ -70,7 +70,7 @@ export async function main() {
 
 		if (method === "authenticateWithGoogle") {
 			const {googleToken} = body
-			const authTokens: AuthTokens = await authApi.authenticateWithGoogle({
+			const authTokens: AuthTokens = await authApi.authenticateViaGoogle({
 				googleToken
 			})
 			context.response.body = JSON.stringify(authTokens)
