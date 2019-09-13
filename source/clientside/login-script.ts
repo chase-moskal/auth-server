@@ -2,10 +2,10 @@
 // import {Host as CrosscallHost} from "crosscall"
 
 import {GoogleAuthDetails} from "./interfaces"
-import {GoogleMagic} from "./services/google-magic"
 import {AccountPopup} from "./services/account-popup"
 import {TokenStorage} from "./services/token-storage"
 import {AuthExchanger} from "./services/auth-exchanger"
+import {GoogleAuthClient} from "./services/google-auth-client"
 
 declare global {
 	interface Window {
@@ -16,14 +16,14 @@ declare global {
 
 async function loginScript() {
 	const {googleAuthDetails} = window
-	const googleMagic = new GoogleMagic(googleAuthDetails)
+	const googleAuthClient = new GoogleAuthClient(googleAuthDetails)
 	const authExchanger = new AuthExchanger()
 	const tokenStorage = new TokenStorage({
 		authExchanger,
 		storage: window.sessionStorage
 	})
 	const accountPopup = new AccountPopup({
-		googleMagic,
+		googleAuthClient,
 		authExchanger,
 		tokenStorage
 	})

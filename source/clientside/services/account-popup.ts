@@ -1,43 +1,43 @@
 
 import {
-	AccessToken,
+	AuthTokens,
 	TokenStorageTopic,
 	AccountPopupTopic,
-	AuthExchangerTopic
+	AuthExchangerTopic,
 } from "authoritarian"
 
-import {GoogleMagicInterface} from "../interfaces"
+import {GoogleAuthClientInterface} from "../interfaces"
 
 export class AccountPopup implements AccountPopupTopic {
 	private _tokenStorage: TokenStorageTopic
 	private _authExchanger: AuthExchangerTopic
-	private _googleMagic: GoogleMagicInterface
+	private _googleAuthClient: GoogleAuthClientInterface
 
 	constructor(options: {
 		tokenStorage: TokenStorageTopic
 		authExchanger: AuthExchangerTopic
-		googleMagic: GoogleMagicInterface
+		googleAuthClient: GoogleAuthClientInterface
 	}) {
-		this._googleMagic = options.googleMagic
+		this._googleAuthClient = options.googleAuthClient
 		this._tokenStorage = options.tokenStorage
 		this._authExchanger = options.authExchanger
 	}
 
-	async login(): Promise<AccessToken> {
-		await this._googleMagic.initGoogleAuth()
-		this._googleMagic.prepareGoogleSignOutButton({
+	async login(): Promise<AuthTokens> {
+		await this._googleAuthClient.initGoogleAuth()
+		this._googleAuthClient.prepareGoogleSignOutButton({
 			button: document.querySelector<HTMLDivElement>("#google-signout")
 		})
 		const tokens = await this._auth()
 		await this._tokenStorage.writeTokens(tokens)
-		return tokens.accessToken
+		return tokens
 	}
 
 	/**
 	 * Authenticate with google
 	 */
 	private async _auth() {
-		const googleUser = await this._googleMagic.prepareGoogleSignInButton()
+		const googleUser = await this._googleAuthClient.prepareGoogleSignInButton()
 		const googleToken = googleUser.getAuthResponse().id_token
 		console.log("googleToken", googleToken)
 		const tokens = await this._authExchanger.authenticateViaGoogle({googleToken})

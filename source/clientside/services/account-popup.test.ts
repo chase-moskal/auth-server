@@ -3,21 +3,21 @@ import {AccountPopup} from "./account-popup"
 
 import {
 	MockAuthExchanger,
-	MockGoogleMagic,
+	MockgoogleAuthClient,
 	MockTokenStorage
 } from "../mocks"
 
 function makeMocks() {
-	const googleMagic = new MockGoogleMagic()
+	const googleAuthClient = new MockgoogleAuthClient()
 	const authExchanger = new MockAuthExchanger()
 	const tokenStorage = new MockTokenStorage()
 	const accountPopup = new AccountPopup({
-		googleMagic,
+		googleAuthClient,
 		authExchanger,
 		tokenStorage
 	})
 
-	googleMagic.prepareGoogleSignInButton.mockImplementation(async() => {
+	googleAuthClient.prepareGoogleSignInButton.mockImplementation(async() => {
 		const googleUser = {
 			getAuthResponse: jest.fn()
 		}
@@ -35,7 +35,7 @@ function makeMocks() {
 	})
 
 	return {
-		googleMagic,
+		googleAuthClient,
 		accountPopup,
 		tokenStorage,
 		authExchanger

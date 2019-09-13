@@ -1,5 +1,5 @@
 
-import {GoogleMagicInterface} from "./interfaces"
+import {GoogleAuthClientInterface} from "./interfaces"
 import {AuthExchangerTopic, TokenStorageTopic} from "authoritarian"
 
 export class MockStorage implements Storage {
@@ -22,7 +22,7 @@ export class MockTokenStorage implements TokenStorageTopic {
 	passiveCheck = jest.fn()
 }
 
-export class MockGoogleMagic implements GoogleMagicInterface {
+export class MockgoogleAuthClient implements GoogleAuthClientInterface {
 	initGoogleAuth = jest.fn()
 	prepareGoogleSignInButton = jest.fn()
 	prepareGoogleSignOutButton = jest.fn()

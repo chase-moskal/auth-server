@@ -18,7 +18,7 @@ const getTemplate = async(filename: string) =>
 main().catch(error => console.error(error))
 
 export async function main() {
-	const config: Config = JSON.parse(<string>await readFile("config.json", "utf8"))
+	const config: Config = JSON.parse(<string>await readFile("config/config.json", "utf8"))
 
 	//
 	// setup boring stuff
