@@ -1,5 +1,11 @@
 
-// import {Host as CrosscallHost} from "crosscall"
+import {Host as CrosscallHost} from "crosscall/dist/cjs/host"
+import {AccountPopupTopic} from "authoritarian/dist/cjs/interfaces"
+import {
+	HostCallee,
+	CalleeTopic,
+	CalleeTopics,
+} from "crosscall/dist/interfaces"
 
 import {GoogleAuthDetails} from "./interfaces"
 import {AccountPopup} from "./services/account-popup"
@@ -27,24 +33,21 @@ async function loginScript() {
 		authExchanger,
 		tokenStorage
 	})
-	const token = await accountPopup.login()
-	console.log("USER LOGIN ROUTINE COMPLETE", token)
+
+	new CrosscallHost({
+		namespace: "authoritarian",
+		callee: {
+			topics: {accountPopup: <any>accountPopup},
+			events: {}
+		},
+		permissions: [{
+			origin: /^http:\/\/localhost:8080$/,
+			allowedTopics: {
+				accountPopup: ["login"]
+			},
+			allowedEvents: []
+		}]
+	})
 }
 
 window.loginScript = loginScript
-
-// const host = new CrosscallHost({
-// 	callee: {
-// 		topics: {
-// 			AccountPopup: <any>AccountPopup
-// 		},
-// 		events: {}
-// 	},
-// 	permissions: [{
-// 		origin: /^http:\/\/localhost:8080$/,
-// 		allowedTopics: {
-// 			exampleTopic: ["AccountPopup"]
-// 		},
-// 		allowedEvents: []
-// 	}]
-// })

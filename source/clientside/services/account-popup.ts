@@ -4,7 +4,7 @@ import {
 	TokenStorageTopic,
 	AccountPopupTopic,
 	AuthExchangerTopic,
-} from "authoritarian"
+} from "authoritarian/dist/interfaces"
 
 import {GoogleAuthClientInterface} from "../interfaces"
 
@@ -30,6 +30,7 @@ export class AccountPopup implements AccountPopupTopic {
 		})
 		const tokens = await this._auth()
 		await this._tokenStorage.writeTokens(tokens)
+		console.log("USER LOGIN ROUTINE COMPLETE", tokens)
 		return tokens
 	}
 

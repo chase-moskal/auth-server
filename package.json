@@ -27,8 +27,8 @@
 	},
 	"homepage": "https://github.com/chase-moskal/authoritarian-client#readme",
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.16",
-		"crosscall": "0.0.6-dev.3",
+		"authoritarian": "0.0.0-dev.19",
+		"crosscall": "0.0.6-dev.8",
 		"express": "^4.17.1",
 		"fancyfs": "^0.1.0",
 		"google-auth-library": "^5.2.1",
@@ -42,7 +42,7 @@
 		"passport": "^0.4.0",
 		"passport-google-oauth": "^2.0.0",
 		"pug": "^2.0.4",
-		"renraku": "0.0.0-dev.7",
+		"renraku": "0.0.0-dev.8",
 		"sinon": "^7.4.2"
 	},
 	"devDependencies": {

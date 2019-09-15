@@ -4,7 +4,7 @@ import {
 	AccessToken,
 	TokenStorageTopic,
 	AuthExchangerTopic
-} from "authoritarian"
+} from "authoritarian/dist/interfaces"
 
 export class TokenStorage implements TokenStorageTopic {
 	private _storage: Storage

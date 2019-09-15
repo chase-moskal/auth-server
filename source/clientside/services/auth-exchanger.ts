@@ -1,5 +1,5 @@
 
-import {AuthExchangerTopic} from "authoritarian"
+import {AuthExchangerTopic} from "authoritarian/dist/interfaces"
 
 export class AuthExchanger implements AuthExchangerTopic {
 

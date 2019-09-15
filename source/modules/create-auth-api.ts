@@ -1,6 +1,6 @@
 
 import {OAuth2Client} from "google-auth-library"
-import {AuthExchangerTopic, RefreshToken, AuthTokens, AccessToken} from "authoritarian"
+import {AuthExchangerTopic, RefreshToken, AuthTokens, AccessToken} from "authoritarian/dist/cjs/interfaces"
 
 import {verifyGoogleIdToken} from "./verify-google-id-token"
 
