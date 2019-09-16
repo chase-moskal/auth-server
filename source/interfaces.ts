@@ -6,6 +6,9 @@ export interface Config {
 
 export interface AuthServerConfig {
 	port: number
+	loginPage: {
+		allowedOriginsRegex: [string, string]
+	}
 }
 
 export interface GoogleConfig {

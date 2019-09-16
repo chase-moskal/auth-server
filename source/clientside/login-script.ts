@@ -1,11 +1,11 @@
 
-import {GoogleAuthDetails} from "./interfaces"
+import {LoginPageConfig} from "./interfaces"
 import {AuthExchanger} from "./services/auth-exchanger"
 import {GoogleAuthClient} from "./services/google-auth-client"
 
 declare global {
 	interface Window {
-		googleAuthDetails: GoogleAuthDetails
+		config: LoginPageConfig
 		loginScript: typeof loginScript
 	}
 }
@@ -13,7 +13,8 @@ declare global {
 const namespace = "authoritarian-login"
 
 async function loginScript() {
-	const allowedOriginsRegex = /^http:\/\/localhost:8080$/i
+	const [regexBody, regexFlags] = window.config.allowedOriginsRegex
+	const allowedOriginsRegex = new RegExp(regexBody, regexFlags)
 	const opener: Window = window.opener
 
 	window.addEventListener("message", async event => {
@@ -40,7 +41,7 @@ async function loginScript() {
 }
 
 async function auth() {
-	const {googleAuthDetails} = window
+	const {googleAuthDetails} = window.config
 	const googleAuthClient = new GoogleAuthClient(googleAuthDetails)
 	const authExchanger = new AuthExchanger()
 

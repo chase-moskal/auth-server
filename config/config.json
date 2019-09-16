@@ -1,6 +1,9 @@
 {
 	"authServer": {
-		"port": 8000
+		"port": 8000,
+		"loginPage": {
+			"allowedOriginsRegex": ["^http:\/\/localhost:8080$", "i"]
+		}
 	},
 	"google": {
 		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com",

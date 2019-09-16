@@ -11,9 +11,6 @@ html
 		a(id="google-signout" href="#" onclick="signOut()" style="display: none;") Sign out
 
 		script.
-			window.googleAuthDetails = {
-				clientId: "#{locals.clientId}",
-				redirectUri: "#{locals.redirectUri}"
-			}
+			window.config = !{JSON.stringify(locals.config)}
 		script(src="login-script.bundle.js")
 		script(src="https://apis.google.com/js/platform.js?onload=loginScript" async defer)

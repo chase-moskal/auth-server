@@ -10,6 +10,7 @@ import {OAuth2Client} from "google-auth-library"
 import {AuthTokens} from "authoritarian/dist/cjs/interfaces"
 
 import {Config} from "./interfaces"
+import {LoginPageConfig} from "./clientside/interfaces"
 import {createAuthApi} from "./modules/create-auth-api"
 
 const getTemplate = async(filename: string) =>
@@ -55,7 +56,14 @@ export async function main() {
 
 	authRouter.get("/login", async context => {
 		console.log("/login")
-		const html = templates.login(config.google)
+		const loginPageConfig: LoginPageConfig = {
+			allowedOriginsRegex: config.authServer.loginPage.allowedOriginsRegex,
+			googleAuthDetails: {
+				clientId: config.google.clientId,
+				redirectUri: config.google.redirectUri
+			}
+		}
+		const html = templates.login({config: loginPageConfig})
 		context.response.body = html
 	})
 

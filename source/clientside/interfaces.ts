@@ -1,4 +1,9 @@
 
+export interface LoginPageConfig {
+	allowedOriginsRegex: [string, string]
+	googleAuthDetails: GoogleAuthDetails
+}
+
 export interface GoogleAuthDetails {
 	clientId: string
 	redirectUri: string
