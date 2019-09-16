@@ -1,15 +1,5 @@
 
-import {Host as CrosscallHost} from "crosscall/dist/cjs/host"
-import {AccountPopupTopic} from "authoritarian/dist/cjs/interfaces"
-import {
-	HostCallee,
-	CalleeTopic,
-	CalleeTopics,
-} from "crosscall/dist/interfaces"
-
 import {GoogleAuthDetails} from "./interfaces"
-import {AccountPopup} from "./services/account-popup"
-import {TokenStorage} from "./services/token-storage"
 import {AuthExchanger} from "./services/auth-exchanger"
 import {GoogleAuthClient} from "./services/google-auth-client"
 
@@ -20,34 +10,54 @@ declare global {
 	}
 }
 
+const namespace = "authoritarian-login"
+
 async function loginScript() {
+	const allowedOriginsRegex = /^http:\/\/localhost:8080$/i
+	const opener: Window = window.opener
+
+	window.addEventListener("message", async event => {
+		const allowedOrigin = allowedOriginsRegex.test(event.origin)
+		const isHandshake = typeof event.data === "object"
+			&& event.data.namespace === namespace
+			&& event.data.handshake === true
+		if (allowedOrigin && isHandshake) {
+
+			// get those sweet sweet tokens
+			const tokens = await auth()
+			opener.postMessage({
+				namespace: "authoritarian-login",
+				tokens
+			}, event.origin)
+
+		}
+		else {
+			console.error(`denied message from origin "${event.origin}"`)
+		}
+	})
+
+	opener.postMessage({namespace, handshake: true}, "*")
+}
+
+async function auth() {
 	const {googleAuthDetails} = window
 	const googleAuthClient = new GoogleAuthClient(googleAuthDetails)
 	const authExchanger = new AuthExchanger()
-	const tokenStorage = new TokenStorage({
-		authExchanger,
-		storage: window.sessionStorage
-	})
-	const accountPopup = new AccountPopup({
-		googleAuthClient,
-		authExchanger,
-		tokenStorage
+
+	await googleAuthClient.initGoogleAuth()
+
+	googleAuthClient.prepareGoogleSignOutButton({
+		button: document.querySelector<HTMLDivElement>("#google-signout")
 	})
 
-	new CrosscallHost({
-		namespace: "authoritarian",
-		callee: {
-			topics: {accountPopup: <any>accountPopup},
-			events: {}
-		},
-		permissions: [{
-			origin: /^http:\/\/localhost:8080$/,
-			allowedTopics: {
-				accountPopup: ["login"]
-			},
-			allowedEvents: []
-		}]
-	})
+	const googleUser = await googleAuthClient.prepareGoogleSignInButton()
+	const googleToken = googleUser.getAuthResponse().id_token
+	console.log("googleToken", googleToken)
+
+	const tokens = await authExchanger.authenticateViaGoogle({googleToken})
+	console.log("USER LOGIN ROUTINE COMPLETE", tokens)
+
+	return tokens
 }
 
 window.loginScript = loginScript
