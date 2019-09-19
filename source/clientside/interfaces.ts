@@ -1,5 +1,5 @@
 
-export interface LoginPageConfig {
+export interface AccountPopupConfig {
 	allowedOriginsRegex: [string, string]
 	googleAuthDetails: GoogleAuthDetails
 }

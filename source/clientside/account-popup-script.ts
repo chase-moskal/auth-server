@@ -1,18 +1,18 @@
 
-import {LoginPageConfig} from "./interfaces"
-import {AuthExchanger} from "./services/auth-exchanger"
+import {AccountPopupConfig} from "./interfaces"
 import {GoogleAuthClient} from "./services/google-auth-client"
+import {createAuthExchangerClient} from "./services/create-auth-exchanger-client"
 
 declare global {
 	interface Window {
-		config: LoginPageConfig
-		loginScript: typeof loginScript
+		config: AccountPopupConfig
+		accountPopupScript: typeof accountPopupScript
 	}
 }
 
-const namespace = "authoritarian-login"
+const namespace = "authoritarian-account-popup"
 
-async function loginScript() {
+async function accountPopupScript() {
 	const [regexBody, regexFlags] = window.config.allowedOriginsRegex
 	const allowedOriginsRegex = new RegExp(regexBody, regexFlags)
 	const opener: Window = window.opener
@@ -27,7 +27,7 @@ async function loginScript() {
 			// get those sweet sweet tokens
 			const tokens = await auth()
 			opener.postMessage({
-				namespace: "authoritarian-login",
+				namespace: "authoritarian-account-popup",
 				tokens
 			}, event.origin)
 
@@ -43,7 +43,9 @@ async function loginScript() {
 async function auth() {
 	const {googleAuthDetails} = window.config
 	const googleAuthClient = new GoogleAuthClient(googleAuthDetails)
-	const authExchanger = new AuthExchanger()
+	const authExchanger = await createAuthExchangerClient({
+		url: `${location.origin}/auth-exchanger`
+	})
 
 	await googleAuthClient.initGoogleAuth()
 
@@ -61,4 +63,4 @@ async function auth() {
 	return tokens
 }
 
-window.loginScript = loginScript
+window.accountPopupScript = accountPopupScript

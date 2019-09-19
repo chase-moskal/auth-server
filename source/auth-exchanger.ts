@@ -1,10 +1,15 @@
 
 import {OAuth2Client} from "google-auth-library"
-import {AuthExchangerTopic, RefreshToken, AuthTokens, AccessToken} from "authoritarian/dist/cjs/interfaces"
+import {
+	AuthTokens,
+	AccessToken,
+	RefreshToken,
+	AuthExchangerTopic,
+} from "authoritarian/dist/cjs/interfaces"
 
-import {verifyGoogleIdToken} from "./verify-google-id-token"
+import {verifyGoogleIdToken} from "./modules/verify-google-id-token"
 
-export const createAuthApi = ({googleClientId, oAuth2Client}: {
+export const createAuthExchanger = ({googleClientId, oAuth2Client}: {
 	googleClientId: string
 	oAuth2Client: OAuth2Client
 }): AuthExchangerTopic => ({
@@ -28,6 +33,8 @@ export const createAuthApi = ({googleClientId, oAuth2Client}: {
 		else {
 			throw new Error(`unknown token`)
 		}
+
+		// generate authoritarian tokens
 
 		return {refreshToken: "r123", accessToken: "a123"}
 	},

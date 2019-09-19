@@ -6,7 +6,7 @@ export interface Config {
 
 export interface AuthServerConfig {
 	port: number
-	loginPage: {
+	accountPopup: {
 		allowedOriginsRegex: [string, string]
 	}
 }

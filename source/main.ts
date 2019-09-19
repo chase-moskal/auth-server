@@ -4,14 +4,15 @@ import * as Koa from "koa"
 import {readFile} from "fancyfs"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
-import * as Router from "koa-router"
-import * as bodyParser from "koa-bodyparser"
 import {OAuth2Client} from "google-auth-library"
-import {AuthTokens} from "authoritarian/dist/cjs/interfaces"
+import {createApiServer} from "renraku/dist/cjs/server/create-api-server"
+import {AuthExchangerApi} from "authoritarian/dist/cjs/interfaces"
+
+import {httpHandler} from "./modules/http-handler"
+import {AccountPopupConfig} from "./clientside/interfaces"
 
 import {Config} from "./interfaces"
-import {LoginPageConfig} from "./clientside/interfaces"
-import {createAuthApi} from "./modules/create-auth-api"
+import {createAuthExchanger} from "./auth-exchanger"
 
 const getTemplate = async(filename: string) =>
 	pug.compile(<string>await readFile(`source/clientside/templates/${filename}`, "utf8"))
@@ -22,79 +23,68 @@ export async function main() {
 	const config: Config = JSON.parse(<string>await readFile("config/config.json", "utf8"))
 
 	//
-	// setup boring stuff
+	// HTML KOA
+	// compiles pug templates
+	// also serves the clientside dir
 	//
-
-	const oAuth2Client = new OAuth2Client(config.google.clientId)
-
-	const authRouter = new Router()
-	authRouter.use(bodyParser())
-
-	const authApi = createAuthApi({
-		googleClientId: config.google.clientId,
-		oAuth2Client
-	})
 
 	const templates = {
-		login: await getTemplate("login.pug"),
-		token: await getTemplate("token.pug")
+		accountPopup: await getTemplate("account-popup.pug"),
+		tokenStorage: await getTemplate("token-storage.pug")
 	}
 
-	//
-	// token api
-	//
+	const htmlKoa = new Koa()
 
-	authRouter.get("/token", async context => {
-		console.log("/token")
-		const html = templates.token()
-		context.response.body = html
-	})
+	// token storage
+	htmlKoa.use(httpHandler("get", "/token-storage", async() => {
+		return templates.tokenStorage()
+	}))
 
-	//
-	// login api
-	//
-
-	authRouter.get("/login", async context => {
-		console.log("/login")
-		const loginPageConfig: LoginPageConfig = {
-			allowedOriginsRegex: config.authServer.loginPage.allowedOriginsRegex,
+	// account popup
+	htmlKoa.use(httpHandler("get", "/account-popup", async() => {
+		console.log("/account-popup")
+		const accountPopupConfig: AccountPopupConfig = {
+			allowedOriginsRegex: config.authServer.accountPopup.allowedOriginsRegex,
 			googleAuthDetails: {
 				clientId: config.google.clientId,
 				redirectUri: config.google.redirectUri
 			}
 		}
-		const html = templates.login({config: loginPageConfig})
-		context.response.body = html
-	})
+		return templates.accountPopup({config: accountPopupConfig})
+	}))
+
+	// static clientside content
+	htmlKoa.use(serve("dist/clientside"))
 
 	//
-	// auth api
+	// AUTH EXCHANGER
+	// renraku json rpc api
 	//
 
-	authRouter.post("/auth", async context => {
-		const body = context.request.body
-		const method = body.method
-		console.log(`/auth "${method}"`)
-
-		if (method === "authenticateWithGoogle") {
-			const {googleToken} = body
-			const authTokens: AuthTokens = await authApi.authenticateViaGoogle({
-				googleToken
-			})
-			context.response.body = JSON.stringify(authTokens)
-		}
-		else {
-			throw new Error(`unknown method "${method}"`)
-		}
+	const {koa: authExchangeKoa} = createApiServer<AuthExchangerApi>({
+		debug: true,
+		logger: console,
+		exposures: [
+			{
+				allowed: /^http\:\/\/localhost\:8\d{3}$/i,
+				forbidden: null,
+				exposed: {
+					authExchanger: createAuthExchanger({
+						googleClientId: config.google.clientId,
+						oAuth2Client: new OAuth2Client(config.google.clientId)
+					})
+				}
+			}
+		]
 	})
 
 	//
 	// run the koa server app
 	//
 
-	const app = new Koa()
-	app.use(authRouter.middleware())
-	app.use(mount("/", serve("dist/clientside")))
-	app.listen(config.authServer.port)
+	const koa = new Koa()
+	koa.use(mount("/html", htmlKoa))
+	koa.use(mount("/auth-exchanger", authExchangeKoa))
+	koa.listen(config.authServer.port)
 	console.log(`Auth server listening on port ${config.authServer.port}`)
 }
