@@ -13,7 +13,7 @@
 		"build-clientside-account-popup-script": "browserify dist/clientside/account-popup-script.js > dist/clientside/account-popup-script.bundle.js",
 		"build-clientside-token-storage-script": "browserify dist/clientside/token-storage-script.js > dist/clientside/token-storage-script.bundle.js",
 		"watch": "tsc -w",
-		"generate-keys": "./node_modules/authoritarian/generate-keys && mv private.pem auth-server.private.pem && mv public.pem auth-server.public.pem",
+		"generate-keys": "./node_modules/authoritarian/generate-keys && mv private.pem config/auth-server.private.pem && mv public.pem config/auth-server.public.pem",
 		"start": "node dist/main",
 		"test": "jest --verbose dist"
 	},
@@ -27,7 +27,7 @@
 	},
 	"homepage": "https://github.com/chase-moskal/authoritarian-client#readme",
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.19",
+		"authoritarian": "0.0.0-dev.21",
 		"crosscall": "0.0.6-dev.8",
 		"express": "^4.17.1",
 		"fancyfs": "^0.1.0",

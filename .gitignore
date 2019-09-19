@@ -1,5 +1,5 @@
 
+*.pem
 /dist
-/*.pem
 /node_modules
 /source/clientside/node_modules

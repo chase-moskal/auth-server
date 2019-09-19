@@ -9,7 +9,7 @@ export async function verifyGoogleIdToken({
 	googleToken: string
 	googleClientId: string
 	oAuth2Client: OAuth2Client
-}): Promise<string> {
+}) {
 
 	const ticket = await oAuth2Client.verifyIdToken({
 		idToken: googleToken,
@@ -17,7 +17,8 @@ export async function verifyGoogleIdToken({
 	})
 
 	const payload = ticket.getPayload()
-	const googleUserId = payload.sub
+	const googleId = payload.sub
+	const {picture, name: realname} = payload
 
-	return googleUserId
+	return {googleId, realname, picture}
 }
