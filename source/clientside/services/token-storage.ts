@@ -3,7 +3,7 @@ import {
 	AuthTokens,
 	AccessToken,
 	TokenStorageTopic,
-	AuthExchangerTopic
+	AuthExchangerTopic,
 } from "authoritarian/dist/interfaces"
 
 export class TokenStorage implements TokenStorageTopic {

@@ -66,7 +66,7 @@ export const createAuthExchanger = ({
 				expiresIn: accessTokenExpiresIn
 			})
 
-			const profile = await profiler.getProfile({accessToken, userId})
+			const profile = await profiler.getProfile({accessToken})
 
 			if (!profile)
 				await profiler.setProfile({

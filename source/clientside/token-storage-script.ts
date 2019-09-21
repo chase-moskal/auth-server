@@ -1,17 +1,44 @@
 
-// import * as renraku from "renraku"
-// import * as crosscall from "crosscall"
-// import {TokenStorage} from "./services/token-storage"
+import {Host as CrosscallHost} from "crosscall/dist/cjs/host"
+import {AuthExchangerApi} from "authoritarian/dist/cjs/interfaces"
+import {authExchangerApiShape} from "authoritarian/dist/cjs/shapes"
+
+import {
+	createApiClient as createRenrakuApiClient
+} from "renraku/dist/cjs/client/create-api-client"
+
+import {TokenStorage} from "./services/token-storage"
+
+main()
+	.then(() => console.log("🎟️ token script"))
+	.catch(error => console.error(error))
 
 async function main() {
-	console.log("token script")
 
-	// // establish the token service instance
-	// const tokenService = new TokenService({
-	// 	authService,
-	// 	storage: window.localStorage
-	// })
+	const {authExchanger} = await createRenrakuApiClient<AuthExchangerApi>({
+		url: `${window.location.origin}/api`,
+		shape: authExchangerApiShape
+	})
 
-	// expose the token service instance as a crosscall host
+	new CrosscallHost({
+		namespace: "crosscall-example",
 
+		callee: {
+			topics: {
+				tokenStorage: <any>new TokenStorage({
+					authExchanger,
+					storage: window.localStorage
+				})
+			},
+			events: {}
+		},
+
+		permissions: [{
+			origin: /^https?:\/\/localhost:8\d{3}$/i,
+			allowedTopics: {
+				testTopic: ["tokenStorage"]
+			},
+			allowedEvents: []
+		}]
+	})
 }
