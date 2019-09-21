@@ -5,15 +5,17 @@ import {readFile} from "fancyfs"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
-import {createApiServer} from "renraku/dist/cjs/server/create-api-server"
 import {AuthExchangerApi} from "authoritarian/dist/cjs/interfaces"
+import {createApiServer} from "renraku/dist/cjs/server/create-api-server"
 
 import {httpHandler} from "./modules/http-handler"
+import {createClaimsVanguard} from "./claims-vanguard"
 import {AccountPopupConfig} from "./clientside/interfaces"
+import {createMongoCollection} from "./modules/create-mongo-collection"
 
 import {Config} from "./interfaces"
+import {MockProfiler} from "./mocks"
 import {createAuthExchanger} from "./auth-exchanger"
-import {MockProfiler, MockClaimsVanguard} from "./mocks"
 
 const getTemplate = async(filename: string) =>
 	pug.compile(<string>await readFile(`source/clientside/templates/${filename}`, "utf8"))
@@ -24,6 +26,7 @@ export async function main() {
 	const config: Config = JSON.parse(<string>await readFile("config/config.json", "utf8"))
 	const publicKey = <string>await readFile("config/auth-server.public.pem", "utf8")
 	const privateKey = <string>await readFile("config/auth-server.private.pem", "utf8")
+	const usersCollection = await createMongoCollection(config.usersDatabase)
 
 	//
 	// HTML KOA
@@ -73,7 +76,7 @@ export async function main() {
 				forbidden: null,
 				exposed: {
 					authExchanger: createAuthExchanger({
-						claimsVanguard: new MockClaimsVanguard(),
+						claimsVanguard: await createClaimsVanguard({usersCollection}),
 						profiler: new MockProfiler(),
 						publicKey,
 						privateKey,

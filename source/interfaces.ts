@@ -2,6 +2,13 @@
 export interface Config {
 	google: GoogleConfig
 	authServer: AuthServerConfig
+	usersDatabase: MongoDatabaseConfig
+}
+
+export interface MongoDatabaseConfig {
+	uri: string
+	dbName: string
+	collectionName: string
 }
 
 export interface AuthServerConfig {

@@ -5,6 +5,11 @@
 			"allowedOriginsRegex": ["^http:\/\/localhost:8080$", "i"]
 		}
 	},
+	"usersDatabase": {
+		"uri": "mongodb+srv://admin:admin@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
+		"dbName": "users",
+		"collectionName": "users"
+	},
 	"google": {
 		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com",
 		"clientSecret": "ZbQ_ADbgMca4YJ5KWcR0FNLA",
