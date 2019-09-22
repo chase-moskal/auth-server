@@ -21,7 +21,7 @@ async function main() {
 	})
 
 	new CrosscallHost({
-		namespace: "crosscall-example",
+		namespace: "authoritarian-token-storage",
 
 		callee: {
 			topics: {
@@ -36,7 +36,7 @@ async function main() {
 		permissions: [{
 			origin: /^https?:\/\/localhost:8\d{3}$/i,
 			allowedTopics: {
-				testTopic: ["tokenStorage"]
+				tokenStorage: ["passiveCheck", "clearTokens", "writeTokens"]
 			},
 			allowedEvents: []
 		}]

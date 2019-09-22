@@ -43,6 +43,7 @@ export async function main() {
 
 	// token storage
 	htmlKoa.use(httpHandler("get", "/token-storage", async() => {
+		console.log("/token-storage")
 		return templates.tokenStorage()
 	}))
 
@@ -96,7 +97,7 @@ export async function main() {
 
 	const koa = new Koa()
 	koa.use(mount("/html", htmlKoa))
-	koa.use(mount("/auth-exchanger", authExchangeKoa))
+	koa.use(mount("/api", authExchangeKoa))
 	koa.listen(config.authServer.port)
 	console.log(`Auth server listening on port ${config.authServer.port}`)
 }

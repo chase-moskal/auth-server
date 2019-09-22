@@ -44,7 +44,7 @@ async function auth() {
 	const {googleAuthDetails} = window.config
 	const googleAuthClient = new GoogleAuthClient(googleAuthDetails)
 	const authExchanger = await createAuthExchangerClient({
-		url: `${location.origin}/auth-exchanger`
+		url: `${location.origin}/api`
 	})
 
 	await googleAuthClient.initGoogleAuth()
