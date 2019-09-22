@@ -27,16 +27,30 @@ export class MockClaimsVanguard implements ClaimsVanguardTopic {
 
 export class MockProfiler implements ProfilerTopic {
 
-	async setProfile({accessToken, profile}) {
-		return null
-	}
-
-	async getProfile({accessToken, userId}) {
+	async getPublicProfile({userId}) {
 		return {
 			userId,
-			picture: "fake-picture",
-			realname: "Fake Chase Moskal",
-			nickname: "fake-chaser3275",
+			public: {
+				picture: "fake-picture",
+				nickname: "fake-chaser3275",
+			}
 		}
+	}
+
+	async getFullProfile({accessToken, userId}) {
+		return {
+			userId,
+			public: {
+				picture: "fake-picture",
+				nickname: "fake-chaser3275",
+			},
+			private: {
+				realname: "Fake Chase Moskal",
+			}
+		}
+	}
+
+	async setFullProfile({accessToken, profile}) {
+		return null
 	}
 }
