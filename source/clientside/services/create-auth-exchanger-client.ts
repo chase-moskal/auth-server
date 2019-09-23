@@ -1,10 +1,10 @@
 
 import {AuthExchangerApi} from "authoritarian/dist/interfaces"
 import {authExchangerApiShape} from "authoritarian/dist/cjs/shapes"
-import {createApiClient} from "renraku/dist/cjs/client/create-api-client"
+import {createNodeApiClient} from "renraku/dist/cjs/client/create-node-api-client"
 
 export async function createAuthExchangerClient({url}: {url: string}) {
-	const {authExchanger} = await createApiClient<AuthExchangerApi>({
+	const {authExchanger} = await createNodeApiClient<AuthExchangerApi>({
 		url,
 		shape: authExchangerApiShape
 	})

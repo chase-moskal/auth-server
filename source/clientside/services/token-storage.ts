@@ -4,7 +4,20 @@ import {
 	AccessToken,
 	TokenStorageTopic,
 	AuthExchangerTopic,
-} from "authoritarian/dist/interfaces"
+} from "authoritarian/dist/cjs/interfaces"
+
+import {decodeToken} from "authoritarian/dist/cjs/crypto"
+
+const tokenIsValid = (token: string) => {
+	if (token) {
+		const decoded: any = decodeToken({token})
+		const expired = decoded.exp < (Date.now() / 1000)
+		return !expired
+	}
+	else {
+		return false
+	}
+}
 
 export class TokenStorage implements TokenStorageTopic {
 	private _storage: Storage
@@ -19,8 +32,8 @@ export class TokenStorage implements TokenStorageTopic {
 	}
 
 	async writeTokens({accessToken, refreshToken}: AuthTokens): Promise<void> {
-		this._storage.setItem("accessToken", accessToken)
-		this._storage.setItem("refreshToken", refreshToken)
+		this._storage.setItem("accessToken", accessToken || "")
+		this._storage.setItem("refreshToken", refreshToken || "")
 	}
 
 	async clearTokens(): Promise<void> {
@@ -32,16 +45,26 @@ export class TokenStorage implements TokenStorageTopic {
 		let accessToken = this._storage.getItem("accessToken")
 		let refreshToken = this._storage.getItem("refreshToken")
 
-		if (!accessToken) {
-			if (refreshToken) {
-				accessToken = await this._authExchanger.authorize({refreshToken})
-			}
-			else {
-				accessToken = null
+		const accessValid = tokenIsValid(accessToken)
+		const refreshValid = tokenIsValid(refreshToken)
+
+		if (refreshValid) {
+			if (!accessValid) {
+
+				// access token missing or expired -- perform a refresh, return access token
+				accessToken = await this._authExchanger.authorize({
+					refreshToken: refreshToken
+				})
+				this.writeTokens({refreshToken, accessToken})
 			}
 		}
+		else {
 
-		await this.writeTokens({accessToken, refreshToken})
+			// refresh token missing or expired -- no login
+			accessToken = null
+			refreshToken = null
+			this.writeTokens({refreshToken, accessToken})
+		}
 
 		return accessToken
 	}

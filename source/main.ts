@@ -2,6 +2,7 @@
 import * as pug from "pug"
 import * as Koa from "koa"
 import {readFile} from "fancyfs"
+import * as cors from "@koa/cors"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
@@ -40,6 +41,7 @@ export async function main() {
 	}
 
 	const htmlKoa = new Koa()
+	htmlKoa.use(cors())
 
 	// token storage
 	htmlKoa.use(httpHandler("get", "/token-storage", async() => {

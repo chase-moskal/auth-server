@@ -4,8 +4,8 @@ import {AuthExchangerApi} from "authoritarian/dist/cjs/interfaces"
 import {authExchangerApiShape} from "authoritarian/dist/cjs/shapes"
 
 import {
-	createApiClient as createRenrakuApiClient
-} from "renraku/dist/cjs/client/create-api-client"
+	createNodeApiClient as createRenrakuApiClient
+} from "renraku/dist/cjs/client/create-node-api-client"
 
 import {TokenStorage} from "./services/token-storage"
 

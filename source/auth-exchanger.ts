@@ -94,11 +94,12 @@ export const createAuthExchanger = ({
 	 * Buy a new access token using a refresh token
 	 */
 	async authorize({refreshToken}: {refreshToken: RefreshToken}): Promise<AccessToken> {
-		const userId = await verifyToken<string>({token: refreshToken, publicKey})
+		const data = await verifyToken<RefreshPayload>({token: refreshToken, publicKey})
+		const {userId} = data.payload
 		const user = await claimsVanguard.getUser({userId})
-		const accessToken = await signToken<User>({
+		const accessToken = await signToken<AccessPayload>({
 			privateKey,
-			payload: user,
+			payload: {user},
 			expiresIn: accessTokenExpiresIn
 		})
 		return accessToken
