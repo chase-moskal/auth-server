@@ -16,7 +16,6 @@ import {createProfilerClient} from "./modules/create-profiler-client"
 import {createMongoCollection} from "./modules/create-mongo-collection"
 
 import {Config} from "./interfaces"
-import {MockProfiler} from "./mocks"
 import {createAuthExchanger} from "./auth-exchanger"
 
 const getTemplate = async(filename: string) =>

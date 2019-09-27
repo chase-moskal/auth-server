@@ -1,6 +1,13 @@
 
 import {TokenStorage} from "./token-storage"
-import {MockAuthExchanger, MockStorage} from "../mocks"
+import {
+	createMockAccessToken,
+	createMockRefreshToken,
+} from "../../mocks"
+import {
+	MockStorage,
+	MockAuthExchanger,
+} from "../jest-mocks"
 
 const makeMocks = () => {
 	const storage = new MockStorage()
@@ -20,28 +27,32 @@ describe("token storage", () => {
 		})
 
 	})
-	xdescribe("passiveCheck()", () => {
+	describe("passiveCheck()", () => {
 
 		it("when access token is available, return it", async() => {
 			const {tokenStorage, storage} = makeMocks()
+			const mockAccessToken = await createMockAccessToken({expiresIn: "10m"})
+			const mockRefreshToken = await createMockRefreshToken({expiresIn: "10m"})
 			storage.getItem.mockImplementation((key: string) => {
-				if (key === "refreshToken") return "r123"
-				else if (key === "accessToken") return "a123"
+				if (key === "refreshToken") return mockRefreshToken
+				else if (key === "accessToken") return mockAccessToken
 			})
 			const accessToken = await tokenStorage.passiveCheck()
-			expect(accessToken).toBe("a123")
+			expect(accessToken).toBe(mockAccessToken)
 		})
 
 		it("when access token is missing, use refresh token to get new access token and return it (and save it too)", async() => {
 			const {tokenStorage, storage, authExchanger} = makeMocks()
-			authExchanger.authorize.mockImplementation(async() => "a123")
+			const mockAccessToken = await createMockAccessToken({expiresIn: "10m"})
+			const mockRefreshToken = await createMockRefreshToken({expiresIn: "10m"})
+			authExchanger.authorize.mockImplementation(async() => mockAccessToken)
 			storage.getItem.mockImplementation((key: string) => {
-				if (key === "refreshToken") return "r123"
+				if (key === "refreshToken") return mockRefreshToken
 				else if (key === "accessToken") return null
 			})
 			const accessToken = await tokenStorage.passiveCheck()
-			expect(authExchanger.authorize.mock.calls[0][0]).toEqual({refreshToken: "r123"})
-			expect(accessToken).toBe("a123")
+			expect(authExchanger.authorize.mock.calls[0][0]).toEqual({refreshToken: mockRefreshToken})
+			expect(accessToken).toBe(mockAccessToken)
 			expect(storage.setItem).toHaveBeenCalled()
 		})
 

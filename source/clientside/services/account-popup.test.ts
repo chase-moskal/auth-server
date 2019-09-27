@@ -5,7 +5,7 @@ import {
 	MockAuthExchanger,
 	MockgoogleAuthClient,
 	MockTokenStorage
-} from "../mocks"
+} from "../jest-mocks"
 
 function makeMocks() {
 	const googleAuthClient = new MockgoogleAuthClient()
