@@ -20,9 +20,10 @@ export class MockTokenStorage implements TokenStorageTopic {
 	clearTokens = jest.fn()
 	writeTokens = jest.fn()
 	passiveCheck = jest.fn()
+	writeAccessToken = jest.fn()
 }
 
-export class MockgoogleAuthClient implements GoogleAuthClientInterface {
+export class MockGoogleAuthClient implements GoogleAuthClientInterface {
 	initGoogleAuth = jest.fn()
 	prepareGoogleSignInButton = jest.fn()
 	prepareGoogleSignOutButton = jest.fn()

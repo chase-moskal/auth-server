@@ -31,6 +31,10 @@ export class TokenStorage implements TokenStorageTopic {
 		this._authExchanger = options.authExchanger
 	}
 
+	async writeAccessToken(accessToken: AccessToken): Promise<void> {
+		this._storage.setItem("accessToken", accessToken)
+	}
+
 	async writeTokens({accessToken, refreshToken}: AuthTokens): Promise<void> {
 		this._storage.setItem("accessToken", accessToken || "")
 		this._storage.setItem("refreshToken", refreshToken || "")

@@ -3,12 +3,12 @@ import {AccountPopup} from "./account-popup"
 
 import {
 	MockAuthExchanger,
-	MockgoogleAuthClient,
+	MockGoogleAuthClient,
 	MockTokenStorage
 } from "../jest-mocks"
 
 function makeMocks() {
-	const googleAuthClient = new MockgoogleAuthClient()
+	const googleAuthClient = new MockGoogleAuthClient()
 	const authExchanger = new MockAuthExchanger()
 	const tokenStorage = new MockTokenStorage()
 	const accountPopup = new AccountPopup({
