@@ -1,6 +1,6 @@
 
 import {Collection, ObjectId} from "mongodb"
-import {ClaimsVanguardTopic, User, Claims} from "authoritarian/dist/cjs/interfaces"
+import {ClaimsVanguardTopic, User, Claims} from "authoritarian/dist-cjs/interfaces"
 
 export const createClaimsVanguard = async({usersCollection}: {
 	usersCollection: Collection

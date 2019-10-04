@@ -1,11 +1,11 @@
 
-import {signToken} from "authoritarian/dist/cjs/crypto"
+import {signToken} from "authoritarian/dist-cjs/crypto"
 import {
 	AccessPayload,
 	ProfilerTopic,
 	RefreshPayload,
 	ClaimsVanguardTopic,
-} from "authoritarian/dist/cjs/interfaces"
+} from "authoritarian/dist-cjs/interfaces"
 
 export const privateKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIJKQIBAAKCAgEAnHbuNcNWKAldKtOS1j6LUsWyeXGI6Nm3J5kd8tVA36nbCw5k

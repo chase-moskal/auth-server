@@ -4,9 +4,9 @@ import {
 	AccessToken,
 	TokenStorageTopic,
 	AuthExchangerTopic,
-} from "authoritarian/dist/cjs/interfaces"
+} from "authoritarian/dist-cjs/interfaces"
 
-import {decodeToken} from "authoritarian/dist/cjs/crypto"
+import {decodeToken} from "authoritarian/dist-cjs/crypto"
 
 const tokenIsValid = (token: string) => {
 	if (token) {

@@ -1,7 +1,7 @@
 
 import {Host as CrosscallHost} from "crosscall/dist/cjs/host"
-import {AuthExchangerApi} from "authoritarian/dist/cjs/interfaces"
-import {authExchangerApiShape} from "authoritarian/dist/cjs/shapes"
+import {AuthExchangerApi} from "authoritarian/dist-cjs/interfaces"
+import {authExchangerApiShape} from "authoritarian/dist-cjs/shapes"
 
 import {
 	createNodeApiClient as createRenrakuApiClient

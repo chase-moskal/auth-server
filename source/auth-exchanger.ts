@@ -1,6 +1,6 @@
 
 import {OAuth2Client} from "google-auth-library"
-import {signToken, verifyToken} from "authoritarian/dist/cjs/crypto"
+import {signToken, verifyToken} from "authoritarian/dist-cjs/crypto"
 import {
 	User,
 	AuthTokens,
@@ -11,7 +11,7 @@ import {
 	RefreshPayload,
 	AuthExchangerTopic,
 	ClaimsVanguardTopic,
-} from "authoritarian/dist/cjs/interfaces"
+} from "authoritarian/dist-cjs/interfaces"
 
 import {verifyGoogleIdToken} from "./modules/verify-google-id-token"
 

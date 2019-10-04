@@ -6,7 +6,7 @@ import * as cors from "@koa/cors"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
-import {AuthExchangerApi} from "authoritarian/dist/cjs/interfaces"
+import {AuthExchangerApi} from "authoritarian/dist-cjs/interfaces"
 import {createApiServer} from "renraku/dist/cjs/server/create-api-server"
 
 import {httpHandler} from "./modules/http-handler"
