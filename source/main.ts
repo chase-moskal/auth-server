@@ -12,7 +12,7 @@ import {createApiServer} from "renraku/dist/cjs/server/create-api-server"
 import {httpHandler} from "./modules/http-handler"
 import {createClaimsVanguard} from "./claims-vanguard"
 import {AccountPopupConfig} from "./clientside/interfaces"
-import {createProfilerClient} from "./modules/create-profiler-client"
+import {createProfileClient} from "./modules/create-profile-client"
 import {createMongoCollection} from "./modules/create-mongo-collection"
 
 import {Config} from "./interfaces"
@@ -80,7 +80,9 @@ export async function main() {
 				exposed: {
 					authExchanger: createAuthExchanger({
 						claimsVanguard: await createClaimsVanguard({usersCollection}),
-						profiler: await createProfilerClient({url: config.profilerConnection.url}),
+						profileMagistrate: await createProfileClient({
+							url: config.profileMagistrateConnection.url
+						}),
 						publicKey,
 						privateKey,
 						accessTokenExpiresIn: "20m",

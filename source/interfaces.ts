@@ -3,7 +3,7 @@ export interface Config {
 	google: GoogleConfig
 	authServer: AuthServerConfig
 	usersDatabase: MongoDatabaseConfig
-	profilerConnection: ProfilerConnection
+	profileMagistrateConnection: ProfileMagistrateConnection
 }
 
 export interface MongoDatabaseConfig {
@@ -27,6 +27,6 @@ export interface GoogleConfig {
 	clientSecret: string
 }
 
-export interface ProfilerConnection {
+export interface ProfileMagistrateConnection {
 	url: string
 }

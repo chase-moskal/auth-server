@@ -2,9 +2,9 @@
 import {signToken} from "authoritarian/dist-cjs/crypto"
 import {
 	AccessPayload,
-	ProfilerTopic,
 	RefreshPayload,
 	ClaimsVanguardTopic,
+	ProfileMagistrateTopic,
 } from "authoritarian/dist-cjs/interfaces"
 
 export const privateKey = `-----BEGIN RSA PRIVATE KEY-----
@@ -82,7 +82,9 @@ export async function createMockAccessToken({expiresIn}: {expiresIn: string}) {
 		expiresIn,
 		payload: {
 			user: {
-				userId: "123", claims: {premium: true}
+				userId: "123",
+				public: {claims: {premium: true}},
+				private: {claims: {}}
 			}
 		},
 	})
@@ -101,27 +103,29 @@ export class MockClaimsVanguard implements ClaimsVanguardTopic {
 	async createUser({googleId}) {
 		return {
 			userId: "fake-user-id",
-			claims: {},
+			public: {claims: {}},
+			private: {claims: {}}
 		}
 	}
 
 	async getUser({userId}) {
 		return {
-			userId: "fake-user-id",
-			claims: {}
+			userId: userId,
+			public: {claims: {}},
+			private: {claims: {}}
 		}
 	}
 
-	async setClaims({userId, claims}) {
+	async setClaims({userId, publicClaims, privateClaims}) {
 		return {
-			userId: "fake-user-id",
-			claims
+			userId,
+			public: {claims: publicClaims},
+			private: {claims: privateClaims}
 		}
 	}
 }
 
-export class MockProfiler implements ProfilerTopic {
-
+export class MockProfileMagistrate implements ProfileMagistrateTopic {
 	async getPublicProfile({userId}) {
 		return {
 			userId,

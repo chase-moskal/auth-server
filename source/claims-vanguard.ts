@@ -1,44 +1,75 @@
 
 import {Collection, ObjectId} from "mongodb"
-import {ClaimsVanguardTopic, User, Claims} from "authoritarian/dist-cjs/interfaces"
+import {
+	User,
+	Claims,
+	ClaimsVanguardTopic,
+} from "authoritarian/dist-cjs/interfaces"
+
+interface UserRecord {
+	_id?: ObjectId
+	googleId: string
+	public: {
+		claims: Claims
+	}
+	private: {
+		claims: Claims
+	}
+}
+
+const recordToUser = (record: UserRecord): User => ({
+	userId: record._id.toHexString(),
+	public: {
+		claims: record.public.claims
+	},
+	private: {
+		claims: record.private.claims
+	}
+})
 
 export const createClaimsVanguard = async({usersCollection}: {
 	usersCollection: Collection
 }): Promise<ClaimsVanguardTopic> => ({
 
+	/**
+	 * Fetch or create a user in the database
+	 */
 	async createUser({googleId}): Promise<User> {
 		const found = await usersCollection.findOne<UserRecord>({googleId})
 		let user: User
 
 		if (found) {
-			user = {
-				userId: found._id.toHexString(),
-				claims: found.claims
-			}
+			user = recordToUser(found)
 		}
 		else {
-			const claims: Claims = {}
 			const record: UserRecord = {
 				googleId,
-				claims
+				public: {claims: {}},
+				private: {claims: {}}
 			}
 			const {insertedId} = await usersCollection.insertOne(record)
-			user = {
-				userId: insertedId.toHexString(),
-				claims
-			}
+			user = recordToUser({...record, _id: insertedId})
 		}
 
 		return user
 	},
 
+	/**
+	 * Get a full user, both private and public information
+	 */
 	async getUser({userId}): Promise<User> {
 		return findUserById(usersCollection, userId)
 	},
 
-	async setClaims({userId, claims}) {
+	/**
+	 * Set claims, either public, private, or both
+	 */
+	async setClaims({userId, publicClaims = {}, privateClaims = {}}) {
 		const _id = new ObjectId(userId)
-		await usersCollection.updateOne({_id}, {claims})
+		await usersCollection.updateOne({_id}, {
+			public: {$set: {claims: {$set: publicClaims}}},
+			private: {$set: {claims: {$set: privateClaims}}},
+		})
 		return findUserById(usersCollection, userId)
 	}
 })
@@ -48,12 +79,6 @@ async function findUserById(
 	userId: string
 ): Promise<User> {
 	const _id = new ObjectId(userId)
-	const {claims} = await usersCollection.findOne<UserRecord>({_id})
-	return {userId, claims}
-}
-
-interface UserRecord {
-	_id?: ObjectId
-	googleId: string
-	claims: Claims
+	const record = await usersCollection.findOne<UserRecord>({_id})
+	return recordToUser(record)
 }

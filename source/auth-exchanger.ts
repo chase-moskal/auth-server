@@ -7,16 +7,16 @@ import {
 	AccessToken,
 	RefreshToken,
 	AccessPayload,
-	ProfilerTopic,
 	RefreshPayload,
 	AuthExchangerTopic,
 	ClaimsVanguardTopic,
+	ProfileMagistrateTopic,
 } from "authoritarian/dist-cjs/interfaces"
 
 import {verifyGoogleIdToken} from "./modules/verify-google-id-token"
 
 export const createAuthExchanger = ({
-	profiler,
+	profileMagistrate,
 	publicKey,
 	privateKey,
 	oAuth2Client,
@@ -28,7 +28,7 @@ export const createAuthExchanger = ({
 	publicKey: string
 	privateKey: string
 	googleClientId: string
-	profiler: ProfilerTopic
+	profileMagistrate: ProfileMagistrateTopic
 	oAuth2Client: OAuth2Client
 	accessTokenExpiresIn: string
 	refreshTokenExpiresIn: string
@@ -66,10 +66,10 @@ export const createAuthExchanger = ({
 				expiresIn: accessTokenExpiresIn
 			})
 
-			const profile = await profiler.getPublicProfile({userId})
+			const profile = await profileMagistrate.getPublicProfile({userId})
 
 			if (!profile)
-				await profiler.setFullProfile({
+				await profileMagistrate.setFullProfile({
 					accessToken,
 					profile: {
 						userId,

@@ -10,7 +10,7 @@
 		"dbName": "users",
 		"collectionName": "users"
 	},
-	"profilerConnection": {
+	"profileMagistrateConnection": {
 		"url": "http://localhost:8001/api"
 	},
 	"google": {
