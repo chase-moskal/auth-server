@@ -2,14 +2,14 @@
 import {Collection} from "mongodb"
 import {
 	User,
-	PublicClaimsDealerTopic,
+	ClaimsDealerTopic,
 } from "authoritarian/dist-cjs/interfaces"
 
 import {findUserById} from "./modules/user-database"
 
-export const createClaimsDealer = async({usersCollection}: {
+export const createClaimsDealer = ({usersCollection}: {
 	usersCollection: Collection
-}): Promise<PublicClaimsDealerTopic> => ({
+}): ClaimsDealerTopic => ({
 
 	/**
 	 * Fetch a user's public information

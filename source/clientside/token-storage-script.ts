@@ -1,10 +1,10 @@
 
 import {Host as CrosscallHost} from "crosscall/dist/cjs/host"
-import {AuthExchangerApi} from "authoritarian/dist-cjs/interfaces"
-import {authExchangerApiShape} from "authoritarian/dist-cjs/shapes"
+import {authExchangerShape} from "authoritarian/dist-cjs/shapes"
+import {AuthExchangerTopic} from "authoritarian/dist-cjs/interfaces"
 
 import {
-	createNodeApiClient as createRenrakuApiClient
+	createNodeApiClient,
 } from "renraku/dist/cjs/client/create-node-api-client"
 
 import {TokenStorage} from "./services/token-storage"
@@ -14,10 +14,11 @@ main()
 	.catch(error => console.error(error))
 
 async function main() {
-
-	const {authExchanger} = await createRenrakuApiClient<AuthExchangerApi>({
+	const {authExchanger} = await createNodeApiClient<{
+		authExchanger: AuthExchangerTopic
+	}>({
 		url: `${window.location.origin}/api`,
-		shape: authExchangerApiShape
+		shape: {authExchanger: authExchangerShape}
 	})
 
 	new CrosscallHost({

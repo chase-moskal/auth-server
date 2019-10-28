@@ -27,9 +27,9 @@ const recordToUser = (record: UserRecord): User => ({
 	}
 })
 
-export const createClaimsVanguard = async({usersCollection}: {
+export const createClaimsVanguard = ({usersCollection}: {
 	usersCollection: Collection
-}): Promise<ClaimsVanguardTopic> => ({
+}): ClaimsVanguardTopic => ({
 
 	/**
 	 * Fetch or create a user in the database

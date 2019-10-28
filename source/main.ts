@@ -8,26 +8,20 @@ import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
 import {createApiServer} from "renraku/dist/cjs/server/create-api-server"
 
-import {
-	AuthExchangerApi,
-	ClaimsVanguardApi,
-} from "authoritarian/dist-cjs/interfaces"
-
 import {httpHandler} from "./modules/http-handler"
 import {createClaimsVanguard} from "./claims-vanguard"
 import {AccountPopupConfig} from "./clientside/interfaces"
 import {createProfileClient} from "./modules/create-profile-client"
 import {createMongoCollection} from "./modules/create-mongo-collection"
 
-import {Config} from "./interfaces"
+import {Config, Api} from "./interfaces"
 import {createAuthExchanger} from "./auth-exchanger"
+import { createClaimsDealer } from "./claims-dealer"
 
 const getTemplate = async(filename: string) =>
 	pug.compile(<string>await readFile(`source/clientside/templates/${filename}`, "utf8"))
 
 main().catch(error => console.error(error))
-
-type Api = AuthExchangerApi & ClaimsVanguardApi
 
 export async function main() {
 	const config: Config = JSON.parse(<string>await readFile("config/config.json", "utf8"))
@@ -76,37 +70,44 @@ export async function main() {
 	// renraku json rpc api
 	//
 
+	const claimsDealer = createClaimsDealer({usersCollection})
+	const claimsVanguard = createClaimsVanguard({usersCollection})
+	const authExchanger = createAuthExchanger({
+		claimsVanguard,
+		profileMagistrate: await createProfileClient({
+			url: config.profileMagistrateConnection.url
+		}),
+		publicKey,
+		privateKey,
+		accessTokenExpiresIn: "20m",
+		refreshTokenExpiresIn: "60d",
+		googleClientId: config.google.clientId,
+		oAuth2Client: new OAuth2Client(config.google.clientId)
+	})
+
 	const {koa: apiKoa} = createApiServer<Api>({
 		debug: true,
 		logger: console,
-		exposures: [
-			{
-				allowed: /^http\:\/\/localhost\:8\d{3}$/i,
-				forbidden: null,
-				exposed: {
-					authExchanger: createAuthExchanger({
-						claimsVanguard: await createClaimsVanguard({usersCollection}),
-						profileMagistrate: await createProfileClient({
-							url: config.profileMagistrateConnection.url
-						}),
-						publicKey,
-						privateKey,
-						accessTokenExpiresIn: "20m",
-						refreshTokenExpiresIn: "60d",
-						googleClientId: config.google.clientId,
-						oAuth2Client: new OAuth2Client(config.google.clientId)
-					})
-				}
+		topics: {
+			claimsVanguard: {
+				whitelist: {},
+				exposed: claimsVanguard
 			},
-			{
-				whitelist: {
-					["paywall-server.public.pem"]: paywallPublicKey
+			claimsDealer: {
+				cors: {
+					allowed: /^http\:\/\/localhost\:8\d{3}$/i,
+					forbidden: null,
 				},
-				exposed: {
-
-				}
-			}
-		]
+				exposed: claimsDealer
+			},
+			authExchanger: {
+				cors: {
+					allowed: /^http\:\/\/localhost\:8\d{3}$/i,
+					forbidden: null,
+				},
+				exposed: authExchanger
+			},
+		}
 	})
 
 	//

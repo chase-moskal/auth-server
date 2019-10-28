@@ -1,6 +1,18 @@
 
 import {ObjectId} from "mongodb"
-import {Claims} from "authoritarian/dist-cjs/interfaces"
+import {
+	Claims,
+	ClaimsDealerTopic,
+	AuthExchangerTopic,
+	ClaimsVanguardTopic,
+} from "authoritarian/dist-cjs/interfaces"
+import {TopicApi} from "renraku/dist/cjs/interfaces"
+
+export interface Api extends TopicApi<Api> {
+	claimsDealer: ClaimsDealerTopic
+	authExchanger: AuthExchangerTopic
+	claimsVanguard: ClaimsVanguardTopic
+}
 
 export interface Config {
 	google: GoogleConfig
