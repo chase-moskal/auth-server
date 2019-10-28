@@ -6,8 +6,12 @@ import * as cors from "@koa/cors"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
-import {AuthExchangerApi} from "authoritarian/dist-cjs/interfaces"
 import {createApiServer} from "renraku/dist/cjs/server/create-api-server"
+
+import {
+	AuthExchangerApi,
+	ClaimsVanguardApi,
+} from "authoritarian/dist-cjs/interfaces"
 
 import {httpHandler} from "./modules/http-handler"
 import {createClaimsVanguard} from "./claims-vanguard"
@@ -22,6 +26,8 @@ const getTemplate = async(filename: string) =>
 	pug.compile(<string>await readFile(`source/clientside/templates/${filename}`, "utf8"))
 
 main().catch(error => console.error(error))
+
+type Api = AuthExchangerApi & ClaimsVanguardApi
 
 export async function main() {
 	const config: Config = JSON.parse(<string>await readFile("config/config.json", "utf8"))
@@ -70,7 +76,7 @@ export async function main() {
 	// renraku json rpc api
 	//
 
-	const {koa: authExchangeKoa} = createApiServer<AuthExchangerApi>({
+	const {koa: apiKoa} = createApiServer<Api>({
 		debug: true,
 		logger: console,
 		exposures: [
@@ -91,6 +97,14 @@ export async function main() {
 						oAuth2Client: new OAuth2Client(config.google.clientId)
 					})
 				}
+			},
+			{
+				whitelist: {
+					["paywall-server.public.pem"]: paywallPublicKey
+				},
+				exposed: {
+
+				}
 			}
 		]
 	})
@@ -101,7 +115,7 @@ export async function main() {
 
 	const koa = new Koa()
 	koa.use(mount("/html", htmlKoa))
-	koa.use(mount("/api", authExchangeKoa))
+	koa.use(mount("/api", apiKoa))
 	koa.listen(config.authServer.port)
 	console.log(`Auth server listening on port ${config.authServer.port}`)
 }

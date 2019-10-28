@@ -1,4 +1,7 @@
 
+import {ObjectId} from "mongodb"
+import {Claims} from "authoritarian/dist-cjs/interfaces"
+
 export interface Config {
 	google: GoogleConfig
 	authServer: AuthServerConfig
@@ -29,4 +32,15 @@ export interface GoogleConfig {
 
 export interface ProfileMagistrateConnection {
 	url: string
+}
+
+export interface UserRecord {
+	_id?: ObjectId
+	googleId: string
+	public: {
+		claims: Claims
+	}
+	private: {
+		claims: Claims
+	}
 }
