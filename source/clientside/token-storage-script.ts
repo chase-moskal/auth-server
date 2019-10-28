@@ -5,7 +5,7 @@ import {AuthExchangerTopic} from "authoritarian/dist-cjs/interfaces"
 
 import {
 	createNodeApiClient,
-} from "renraku/dist/cjs/client/create-node-api-client"
+} from "renraku/dist-cjs/client/create-node-api-client"
 
 import {TokenStorage} from "./services/token-storage"
 

@@ -6,7 +6,7 @@ import {
 	AuthExchangerTopic,
 	ClaimsVanguardTopic,
 } from "authoritarian/dist-cjs/interfaces"
-import {TopicApi} from "renraku/dist/cjs/interfaces"
+import {TopicApi} from "renraku/dist-cjs/interfaces"
 
 export interface Api extends TopicApi<Api> {
 	claimsDealer: ClaimsDealerTopic

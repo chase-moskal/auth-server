@@ -41,7 +41,7 @@
 		"passport": "^0.4.0",
 		"passport-google-oauth": "^2.0.0",
 		"pug": "^2.0.4",
-		"renraku": "0.0.0-dev.14",
+		"renraku": "0.0.0-dev.16",
 		"sinon": "^7.5.0"
 	},
 	"devDependencies": {

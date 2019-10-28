@@ -6,7 +6,7 @@ import * as cors from "@koa/cors"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
-import {createApiServer} from "renraku/dist/cjs/server/create-api-server"
+import {createApiServer} from "renraku/dist-cjs/server/create-api-server"
 
 import {httpHandler} from "./modules/http-handler"
 import {createClaimsVanguard} from "./claims-vanguard"
@@ -19,14 +19,26 @@ import {createAuthExchanger} from "./auth-exchanger"
 import { createClaimsDealer } from "./claims-dealer"
 
 const getTemplate = async(filename: string) =>
-	pug.compile(<string>await readFile(`source/clientside/templates/${filename}`, "utf8"))
+	pug.compile(<string>await readFile(
+		`source/clientside/templates/${filename}`,
+		"utf8"
+	))
 
 main().catch(error => console.error(error))
 
 export async function main() {
-	const config: Config = JSON.parse(<string>await readFile("config/config.json", "utf8"))
-	const publicKey = <string>await readFile("config/auth-server.public.pem", "utf8")
-	const privateKey = <string>await readFile("config/auth-server.private.pem", "utf8")
+	const config: Config = JSON.parse(<string>await readFile(
+		"config/config.json",
+		"utf8"
+	))
+	const publicKey = <string>await readFile(
+		"config/auth-server.public.pem",
+		"utf8"
+	)
+	const privateKey = <string>await readFile(
+		"config/auth-server.private.pem",
+		"utf8"
+	)
 	const usersCollection = await createMongoCollection(config.usersDatabase)
 
 	//
@@ -52,12 +64,11 @@ export async function main() {
 	// account popup
 	htmlKoa.use(httpHandler("get", "/account-popup", async() => {
 		console.log("/account-popup")
+		const {clientId, redirectUri} = config.google
+		const {allowedOriginsRegex} = config.authServer.accountPopup
 		const accountPopupConfig: AccountPopupConfig = {
-			allowedOriginsRegex: config.authServer.accountPopup.allowedOriginsRegex,
-			googleAuthDetails: {
-				clientId: config.google.clientId,
-				redirectUri: config.google.redirectUri
-			}
+			allowedOriginsRegex,
+			googleAuthDetails: {clientId, redirectUri}
 		}
 		return templates.accountPopup({config: accountPopupConfig})
 	}))
@@ -73,16 +84,16 @@ export async function main() {
 	const claimsDealer = createClaimsDealer({usersCollection})
 	const claimsVanguard = createClaimsVanguard({usersCollection})
 	const authExchanger = createAuthExchanger({
-		claimsVanguard,
-		profileMagistrate: await createProfileClient({
-			url: config.profileMagistrateConnection.url
-		}),
 		publicKey,
 		privateKey,
+		claimsVanguard,
 		accessTokenExpiresIn: "20m",
 		refreshTokenExpiresIn: "60d",
 		googleClientId: config.google.clientId,
-		oAuth2Client: new OAuth2Client(config.google.clientId)
+		oAuth2Client: new OAuth2Client(config.google.clientId),
+		profileMagistrate: await createProfileClient({
+			url: config.profileMagistrateConnection.url
+		})
 	})
 
 	const {koa: apiKoa} = createApiServer<Api>({
@@ -106,7 +117,7 @@ export async function main() {
 					forbidden: null,
 				},
 				exposed: authExchanger
-			},
+			}
 		}
 	})
 
