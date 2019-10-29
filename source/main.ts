@@ -122,5 +122,5 @@ export async function main() {
 		.use(mount("/api", apiKoa))
 		.listen(config.port)
 
-	console.log(`🌐 auth-server listening on port ${config.port}`)
+	console.log(`🌐 auth-server on ${config.port}`)
 }
