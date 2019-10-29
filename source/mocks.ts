@@ -99,7 +99,6 @@ export async function createMockRefreshToken({expiresIn}: {expiresIn: string}) {
 }
 
 export class MockClaimsVanguard implements ClaimsVanguardTopic {
-
 	async createUser({googleId}) {
 		return {
 			userId: "fake-user-id",
@@ -107,7 +106,6 @@ export class MockClaimsVanguard implements ClaimsVanguardTopic {
 			private: {claims: {}}
 		}
 	}
-
 	async getUser({userId}) {
 		return {
 			userId: userId,
@@ -115,7 +113,6 @@ export class MockClaimsVanguard implements ClaimsVanguardTopic {
 			private: {claims: {}}
 		}
 	}
-
 	async setClaims({userId, publicClaims, privateClaims}) {
 		return {
 			userId,
@@ -135,7 +132,6 @@ export class MockProfileMagistrate implements ProfileMagistrateTopic {
 			}
 		}
 	}
-
 	async getFullProfile({accessToken, userId}) {
 		return {
 			userId,
@@ -148,7 +144,6 @@ export class MockProfileMagistrate implements ProfileMagistrateTopic {
 			}
 		}
 	}
-
 	async setFullProfile({accessToken, profile}) {
 		return null
 	}
