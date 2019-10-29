@@ -1,9 +1,8 @@
 {
-	"authServer": {
-		"port": 8000,
-		"accountPopup": {
-			"allowedOriginsRegex": ["^http:\/\/localhost:8080$", "i"]
-		}
+	"port": 8000,
+	"debug": true,
+	"accountPopup": {
+		"allowedOriginsRegex": ["^http:\/\/localhost:8080$", "i"]
 	},
 	"usersDatabase": {
 		"uri": "mongodb+srv://admin:admin@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",

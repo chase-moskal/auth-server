@@ -31,7 +31,6 @@
 		"authoritarian": "0.0.0-dev.34",
 		"crosscall": "0.0.6-dev.11",
 		"express": "^4.17.1",
-		"fancyfs": "^0.1.0",
 		"google-auth-library": "^5.5.1",
 		"koa": "^2.11.0",
 		"koa-bodyparser": "^4.2.1",

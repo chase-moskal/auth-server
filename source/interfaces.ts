@@ -15,23 +15,20 @@ export interface Api extends TopicApi<Api> {
 }
 
 export interface Config {
+	port: number
+	debug: boolean
 	google: GoogleConfig
-	authServer: AuthServerConfig
 	usersDatabase: MongoDatabaseConfig
 	profileMagistrateConnection: ProfileMagistrateConnection
+	accountPopup: {
+		allowedOriginsRegex: [string, string]
+	}
 }
 
 export interface MongoDatabaseConfig {
 	uri: string
 	dbName: string
 	collectionName: string
-}
-
-export interface AuthServerConfig {
-	port: number
-	accountPopup: {
-		allowedOriginsRegex: [string, string]
-	}
 }
 
 export interface GoogleConfig {

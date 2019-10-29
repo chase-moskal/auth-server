@@ -1,12 +1,14 @@
 
 import * as pug from "pug"
 import * as Koa from "koa"
-import {readFile} from "fancyfs"
 import * as cors from "@koa/cors"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
 import {createApiServer} from "renraku/dist-cjs/server/create-api-server"
+
+import {promises as fsPromises} from "fs"
+const read = (path: string) => fsPromises.readFile(path, "utf8")
 
 import {httpHandler} from "./modules/http-handler"
 import {createClaimsVanguard} from "./claims-vanguard"
@@ -15,71 +17,29 @@ import {createProfileClient} from "./modules/create-profile-client"
 import {createMongoCollection} from "./modules/create-mongo-collection"
 
 import {Config, Api} from "./interfaces"
+import {createClaimsDealer} from "./claims-dealer"
 import {createAuthExchanger} from "./auth-exchanger"
-import { createClaimsDealer } from "./claims-dealer"
 
 const getTemplate = async(filename: string) =>
-	pug.compile(<string>await readFile(
-		`source/clientside/templates/${filename}`,
-		"utf8"
-	))
+	pug.compile(await read(`source/clientside/templates/${filename}`))
 
 main().catch(error => console.error(error))
 
 export async function main() {
-	const config: Config = JSON.parse(<string>await readFile(
-		"config/config.json",
-		"utf8"
-	))
-	const publicKey = <string>await readFile(
-		"config/auth-server.public.pem",
-		"utf8"
-	)
-	const privateKey = <string>await readFile(
-		"config/auth-server.private.pem",
-		"utf8"
-	)
-	const usersCollection = await createMongoCollection(config.usersDatabase)
+	const config: Config = JSON.parse(await read("config/config.json"))
 
 	//
-	// HTML KOA
-	// compiles pug templates
-	// also serves the clientside dir
+	// initialization
 	//
+
+	const publicKey = await read("config/auth-server.public.pem")
+	const privateKey = await read("config/auth-server.private.pem")
+	const usersCollection = await createMongoCollection(config.usersDatabase)
 
 	const templates = {
 		accountPopup: await getTemplate("account-popup.pug"),
 		tokenStorage: await getTemplate("token-storage.pug")
 	}
-
-	const htmlKoa = new Koa()
-	htmlKoa.use(cors())
-
-	// token storage
-	htmlKoa.use(httpHandler("get", "/token-storage", async() => {
-		console.log("/token-storage")
-		return templates.tokenStorage()
-	}))
-
-	// account popup
-	htmlKoa.use(httpHandler("get", "/account-popup", async() => {
-		console.log("/account-popup")
-		const {clientId, redirectUri} = config.google
-		const {allowedOriginsRegex} = config.authServer.accountPopup
-		const accountPopupConfig: AccountPopupConfig = {
-			allowedOriginsRegex,
-			googleAuthDetails: {clientId, redirectUri}
-		}
-		return templates.accountPopup({config: accountPopupConfig})
-	}))
-
-	// static clientside content
-	htmlKoa.use(serve("dist/clientside"))
-
-	//
-	// AUTH EXCHANGER
-	// renraku json rpc api
-	//
 
 	const claimsDealer = createClaimsDealer({usersCollection})
 	const claimsVanguard = createClaimsVanguard({usersCollection})
@@ -96,27 +56,59 @@ export async function main() {
 		})
 	})
 
+	//
+	// static html frontend
+	//
+
+	const htmlKoa = new Koa()
+		.use(cors())
+
+		// token storage
+		.use(httpHandler("get", "/token-storage", async() => {
+			console.log("/token-storage")
+			return templates.tokenStorage()
+		}))
+
+		// account popup
+		.use(httpHandler("get", "/account-popup", async() => {
+			console.log("/account-popup")
+			const {clientId, redirectUri} = config.google
+			const {allowedOriginsRegex} = config.accountPopup
+			const accountPopupConfig: AccountPopupConfig = {
+				allowedOriginsRegex,
+				googleAuthDetails: {clientId, redirectUri}
+			}
+			return templates.accountPopup({config: accountPopupConfig})
+		}))
+
+		// static clientside content
+		.use(serve("dist/clientside"))
+
+	//
+	// json rpc api
+	//
+
 	const {koa: apiKoa} = createApiServer<Api>({
-		debug: true,
 		logger: console,
+		debug: config.debug,
 		topics: {
 			claimsVanguard: {
-				whitelist: {},
-				exposed: claimsVanguard
+				exposed: claimsVanguard,
+				whitelist: {}
 			},
 			claimsDealer: {
+				exposed: claimsDealer,
 				cors: {
 					allowed: /^http\:\/\/localhost\:8\d{3}$/i,
-					forbidden: null,
-				},
-				exposed: claimsDealer
+					forbidden: null
+				}
 			},
 			authExchanger: {
+				exposed: authExchanger,
 				cors: {
 					allowed: /^http\:\/\/localhost\:8\d{3}$/i,
-					forbidden: null,
-				},
-				exposed: authExchanger
+					forbidden: null
+				}
 			}
 		}
 	})
@@ -125,9 +117,10 @@ export async function main() {
 	// run the koa server app
 	//
 
-	const koa = new Koa()
-	koa.use(mount("/html", htmlKoa))
-	koa.use(mount("/api", apiKoa))
-	koa.listen(config.authServer.port)
-	console.log(`Auth server listening on port ${config.authServer.port}`)
+	new Koa()
+		.use(mount("/html", htmlKoa))
+		.use(mount("/api", apiKoa))
+		.listen(config.port)
+
+	console.log(`🌐 auth-server listening on port ${config.port}`)
 }
