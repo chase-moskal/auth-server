@@ -3,14 +3,14 @@ doctype html
 html
 	head
 		meta(charset="utf-8")
-		title Login
+		title Account popup
 
 	body
-		h1 Login
+		h1 Account popup
 		div(id="google-signin")
 		a(id="google-signout" href="#" onclick="signOut()" style="display: none;") Sign out
 
 		script.
-			window.config = !{JSON.stringify(locals.config)}
+			window.config = !{JSON.stringify(locals.accountPopupConfig)}
 		script(src="account-popup-script.bundle.js")
-		script(src="https://apis.google.com/js/platform.js?onload=accountPopupScript" async defer)
+		script(src="https://apis.google.com/js/platform.js?onload=start" async defer)

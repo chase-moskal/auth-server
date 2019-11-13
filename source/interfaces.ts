@@ -6,9 +6,11 @@ import {
 	AuthExchangerTopic,
 	ClaimsVanguardTopic,
 } from "authoritarian/dist-cjs/interfaces"
-import {TopicApi} from "renraku/dist-cjs/interfaces"
+import {Api} from "renraku/dist-cjs/interfaces"
 
-export interface Api extends TopicApi<Api> {
+import {AccountPopupConfig} from "./clientside/interfaces"
+
+export interface AuthApi extends Api<AuthApi> {
 	claimsDealer: ClaimsDealerTopic
 	authExchanger: AuthExchangerTopic
 	claimsVanguard: ClaimsVanguardTopic
@@ -18,11 +20,9 @@ export interface Config {
 	port: number
 	debug: boolean
 	google: GoogleConfig
+	accountPopup: AccountPopupConfig
 	usersDatabase: MongoDatabaseConfig
-	profileMagistrateConnection: ProfileMagistrateConnection
-	accountPopup: {
-		allowedOriginsRegex: [string, string]
-	}
+	profileServerConnection: profileServerConnection
 }
 
 export interface MongoDatabaseConfig {
@@ -39,7 +39,7 @@ export interface GoogleConfig {
 	clientSecret: string
 }
 
-export interface ProfileMagistrateConnection {
+export interface profileServerConnection {
 	url: string
 }
 

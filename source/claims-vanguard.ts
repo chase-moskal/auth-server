@@ -17,6 +17,7 @@ interface UserRecord {
 	}
 }
 
+// convert a database user record to a public-facing user object
 const recordToUser = (record: UserRecord): User => ({
 	userId: record._id.toHexString(),
 	public: {

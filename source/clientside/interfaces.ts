@@ -1,6 +1,21 @@
 
+export interface JsonRegex {
+	pattern: string
+	flags: string
+}
+
+export interface CorsConfig {
+	allowed: JsonRegex
+	forbidden?: JsonRegex
+}
+
+
 export interface AccountPopupConfig {
-	allowedOriginsRegex: [string, string]
+	cors: CorsConfig
+}
+
+export interface AccountPopupSettings extends AccountPopupConfig {
+	debug: boolean
 	googleAuthDetails: GoogleAuthDetails
 }
 

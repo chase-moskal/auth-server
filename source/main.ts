@@ -5,18 +5,18 @@ import * as cors from "@koa/cors"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
-import {createApiServer} from "renraku/dist-cjs/server/create-api-server"
+import {apiServer} from "renraku/dist-cjs/api-server"
 
 import {promises as fsPromises} from "fs"
 const read = (path: string) => fsPromises.readFile(path, "utf8")
 
 import {httpHandler} from "./modules/http-handler"
 import {createClaimsVanguard} from "./claims-vanguard"
-import {AccountPopupConfig} from "./clientside/interfaces"
+import {AccountPopupConfig, AccountPopupSettings} from "./clientside/interfaces"
 import {createProfileClient} from "./modules/create-profile-client"
 import {createMongoCollection} from "./modules/create-mongo-collection"
 
-import {Config, Api} from "./interfaces"
+import {Config, AuthApi} from "./interfaces"
 import {createClaimsDealer} from "./claims-dealer"
 import {createAuthExchanger} from "./auth-exchanger"
 
@@ -41,19 +41,21 @@ export async function main() {
 		tokenStorage: await getTemplate("token-storage.pug")
 	}
 
+	const {profileMagistrate} = createProfileClient({
+		url: config.profileServerConnection.url
+	})
+
 	const claimsDealer = createClaimsDealer({usersCollection})
 	const claimsVanguard = createClaimsVanguard({usersCollection})
 	const authExchanger = createAuthExchanger({
 		publicKey,
 		privateKey,
 		claimsVanguard,
+		profileMagistrate,
 		accessTokenExpiresIn: "20m",
 		refreshTokenExpiresIn: "60d",
 		googleClientId: config.google.clientId,
 		oAuth2Client: new OAuth2Client(config.google.clientId),
-		profileMagistrate: await createProfileClient({
-			url: config.profileMagistrateConnection.url
-		})
 	})
 
 	//
@@ -73,12 +75,12 @@ export async function main() {
 		.use(httpHandler("get", "/account-popup", async() => {
 			console.log("/account-popup")
 			const {clientId, redirectUri} = config.google
-			const {allowedOriginsRegex} = config.accountPopup
-			const accountPopupConfig: AccountPopupConfig = {
-				allowedOriginsRegex,
+			const accountPopupSettings: AccountPopupSettings = {
+				...config.accountPopup,
+				debug: config.debug,
 				googleAuthDetails: {clientId, redirectUri}
 			}
-			return templates.accountPopup({config: accountPopupConfig})
+			return templates.accountPopup({accountPopupSettings})
 		}))
 
 		// static clientside content
@@ -88,10 +90,10 @@ export async function main() {
 	// json rpc api
 	//
 
-	const {koa: apiKoa} = createApiServer<Api>({
+	const {koa: apiKoa} = apiServer<AuthApi>({
 		logger: console,
 		debug: config.debug,
-		topics: {
+		exposures: {
 			claimsVanguard: {
 				exposed: claimsVanguard,
 				whitelist: {}

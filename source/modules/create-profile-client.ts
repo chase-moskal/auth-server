@@ -1,17 +1,11 @@
 
-import {profileMagistrateShape} from "authoritarian/dist-cjs/shapes"
-import {ProfileMagistrateTopic} from "authoritarian/dist-cjs/interfaces"
+import {profileShape} from "authoritarian/dist-cjs/shapes"
+import {ProfileApi} from "authoritarian/dist-cjs/interfaces"
+import {apiNodeClient} from "renraku/dist-cjs/api-node-client"
 
-import {
-	createNodeApiClient
-} from "renraku/dist-cjs/client/create-node-api-client"
-
-export async function createProfileClient({url}: {url: string}) {
-	const {profileMagistrate} = await createNodeApiClient<{
-		profileMagistrate: ProfileMagistrateTopic
-	}>({
+export function createProfileClient({url}: {url: string}) {
+	return apiNodeClient<ProfileApi>({
 		url,
-		shape: {profileMagistrate: profileMagistrateShape},
+		shape: profileShape,
 	})
-	return profileMagistrate
 }

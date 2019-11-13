@@ -1,11 +1,8 @@
 
-import {Host as CrosscallHost} from "crosscall/dist/cjs/host"
-import {authExchangerShape} from "authoritarian/dist-cjs/shapes"
-import {AuthExchangerTopic} from "authoritarian/dist-cjs/interfaces"
-
-import {
-	createNodeApiClient,
-} from "renraku/dist-cjs/client/create-node-api-client"
+import {authShape} from "authoritarian/dist-cjs/shapes"
+import {AuthApi} from "authoritarian/dist-cjs/interfaces"
+import {apiNodeClient} from "renraku/dist-cjs/api-node-client"
+import {crosscallHost} from "crosscall/dist-cjs/crosscall-host"
 
 import {TokenStorage} from "./services/token-storage"
 
@@ -14,32 +11,23 @@ main()
 	.catch(error => console.error(error))
 
 async function main() {
-	const {authExchanger} = await createNodeApiClient<{
-		authExchanger: AuthExchangerTopic
-	}>({
+	const {authExchanger} = apiNodeClient<AuthApi>({
 		url: `${window.location.origin}/api`,
-		shape: {authExchanger: authExchangerShape}
+		shape: authShape
 	})
-
-	new CrosscallHost({
+	crosscallHost<any>({
 		namespace: "authoritarian-token-storage",
-
-		callee: {
-			topics: {
-				tokenStorage: <any>new TokenStorage({
+		exposures: {
+			tokenStorage: {
+				exposed: new TokenStorage({
 					authExchanger,
 					storage: window.localStorage
-				})
-			},
-			events: {}
-		},
-
-		permissions: [{
-			origin: /^https?:\/\/localhost:8\d{3}$/i,
-			allowedTopics: {
-				tokenStorage: ["passiveCheck", "clearTokens", "writeTokens"]
-			},
-			allowedEvents: []
-		}]
+				}),
+				cors: {
+					allowed: /^https?:\/\/localhost:8\d{3}$/i,
+					forbidden: null
+				}
+			}
+		}
 	})
 }
