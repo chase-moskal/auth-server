@@ -75,12 +75,12 @@ export async function main() {
 		.use(httpHandler("get", "/account-popup", async() => {
 			console.log("/account-popup")
 			const {clientId, redirectUri} = config.google
-			const accountPopupSettings: AccountPopupSettings = {
+			const settings: AccountPopupSettings = {
 				...config.accountPopup,
 				debug: config.debug,
 				googleAuthDetails: {clientId, redirectUri}
 			}
-			return templates.accountPopup({accountPopupSettings})
+			return templates.accountPopup({settings})
 		}))
 
 		// static clientside content

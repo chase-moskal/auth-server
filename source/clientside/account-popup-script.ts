@@ -12,8 +12,9 @@ declare global {
 	}
 }
 
-export const regex = (json: JsonRegex) =>
-	new RegExp(json.pattern, json.flags)
+export const regex = (json: JsonRegex) => json
+	? new RegExp(json.pattern, json.flags)
+	: null
 
 window.start = async function start() {
 	const {settings} = window

@@ -3,7 +3,10 @@
 	"debug": true,
 	"accountPopup": {
 		"cors": {
-			"allowed": ["^http:\/\/localhost:8\\d{3}$", "i"],
+			"allowed": {
+				"pattern": "^http:\/\/localhost:8\\d{3}$",
+				"flags": "i"
+			},
 			"forbidden": null
 		}
 	},
