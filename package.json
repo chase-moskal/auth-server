@@ -28,8 +28,8 @@
 	"homepage": "https://github.com/chase-moskal/authoritarian-client#readme",
 	"dependencies": {
 		"@koa/cors": "^3.0.0",
-		"authoritarian": "0.0.0-dev.34",
-		"crosscall": "0.0.6-dev.13",
+		"authoritarian": "0.0.0-dev.35",
+		"crosscall": "0.0.6-dev.16",
 		"express": "^4.17.1",
 		"google-auth-library": "^5.5.1",
 		"koa": "^2.11.0",
@@ -40,7 +40,7 @@
 		"passport": "^0.4.0",
 		"passport-google-oauth": "^2.0.0",
 		"pug": "^2.0.4",
-		"renraku": "0.0.0-dev.18",
+		"renraku": "0.0.0-dev.19",
 		"sinon": "^7.5.0"
 	},
 	"devDependencies": {
