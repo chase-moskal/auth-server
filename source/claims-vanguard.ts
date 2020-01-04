@@ -2,31 +2,11 @@
 import {Collection, ObjectId} from "mongodb"
 import {
 	User,
-	Claims,
 	ClaimsVanguardTopic,
 } from "authoritarian/dist-cjs/interfaces"
 
-interface UserRecord {
-	_id?: ObjectId
-	googleId: string
-	public: {
-		claims: Claims
-	}
-	private: {
-		claims: Claims
-	}
-}
-
-// convert a database user record to a public-facing user object
-const recordToUser = (record: UserRecord): User => ({
-	userId: record._id.toHexString(),
-	public: {
-		claims: record.public.claims
-	},
-	private: {
-		claims: record.private.claims
-	}
-})
+import {UserRecord} from "./interfaces"
+import {findUserById, recordToUser} from "./modules/user-database"
 
 export const createClaimsVanguard = ({usersCollection}: {
 	usersCollection: Collection
@@ -45,8 +25,7 @@ export const createClaimsVanguard = ({usersCollection}: {
 		else {
 			const record: UserRecord = {
 				googleId,
-				public: {claims: {}},
-				private: {claims: {}}
+				claims: {}
 			}
 			const {insertedId} = await usersCollection.insertOne(record)
 			user = recordToUser({...record, _id: insertedId})
@@ -55,31 +34,15 @@ export const createClaimsVanguard = ({usersCollection}: {
 		return user
 	},
 
-	/**
-	 * Get a full user, both private and public information
-	 */
 	async getUser({userId}): Promise<User> {
 		return findUserById(usersCollection, userId)
 	},
 
-	/**
-	 * Set claims, either public, private, or both
-	 */
-	async setClaims({userId, publicClaims = {}, privateClaims = {}}) {
+	async setClaims({userId, claims = {}}) {
 		const _id = new ObjectId(userId)
 		await usersCollection.updateOne({_id}, {
-			public: {$set: {claims: {$set: publicClaims}}},
-			private: {$set: {claims: {$set: privateClaims}}},
+			$set: {claims: {$set: claims}},
 		})
 		return findUserById(usersCollection, userId)
 	}
 })
-
-async function findUserById(
-	usersCollection: Collection,
-	userId: string
-): Promise<User> {
-	const _id = new ObjectId(userId)
-	const record = await usersCollection.findOne<UserRecord>({_id})
-	return recordToUser(record)
-}

@@ -11,14 +11,13 @@ import {promises as fsPromises} from "fs"
 const read = (path: string) => fsPromises.readFile(path, "utf8")
 
 import {httpHandler} from "./modules/http-handler"
-import {createClaimsVanguard} from "./claims-vanguard"
-import {AccountPopupConfig, AccountPopupSettings} from "./clientside/interfaces"
+import {AccountPopupSettings} from "./clientside/interfaces"
 import {createProfileClient} from "./modules/create-profile-client"
 import {createMongoCollection} from "./modules/create-mongo-collection"
 
 import {Config, AuthApi} from "./interfaces"
-import {createClaimsDealer} from "./claims-dealer"
 import {createAuthExchanger} from "./auth-exchanger"
+import {createClaimsVanguard} from "./claims-vanguard"
 
 const getTemplate = async(filename: string) =>
 	pug.compile(await read(`source/clientside/templates/${filename}`))
@@ -45,7 +44,6 @@ export async function main() {
 		url: config.profileServerConnection.url
 	})
 
-	const claimsDealer = createClaimsDealer({usersCollection})
 	const claimsVanguard = createClaimsVanguard({usersCollection})
 	const authExchanger = createAuthExchanger({
 		publicKey,
@@ -97,13 +95,6 @@ export async function main() {
 			claimsVanguard: {
 				exposed: claimsVanguard,
 				whitelist: {}
-			},
-			claimsDealer: {
-				exposed: claimsDealer,
-				cors: {
-					allowed: /^http\:\/\/localhost\:8\d{3}$/i,
-					forbidden: null
-				}
 			},
 			authExchanger: {
 				exposed: authExchanger,

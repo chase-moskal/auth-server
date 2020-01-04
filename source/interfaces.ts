@@ -2,7 +2,6 @@
 import {ObjectId} from "mongodb"
 import {
 	Claims,
-	ClaimsDealerTopic,
 	AuthExchangerTopic,
 	ClaimsVanguardTopic,
 } from "authoritarian/dist-cjs/interfaces"
@@ -11,7 +10,6 @@ import {Api} from "renraku/dist-cjs/interfaces"
 import {AccountPopupConfig} from "./clientside/interfaces"
 
 export interface AuthApi extends Api<AuthApi> {
-	claimsDealer: ClaimsDealerTopic
 	authExchanger: AuthExchangerTopic
 	claimsVanguard: ClaimsVanguardTopic
 }
@@ -45,11 +43,6 @@ export interface profileServerConnection {
 
 export interface UserRecord {
 	_id?: ObjectId
+	claims: Claims
 	googleId: string
-	public: {
-		claims: Claims
-	}
-	private: {
-		claims: Claims
-	}
 }

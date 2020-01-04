@@ -13,26 +13,27 @@ import {
 	ProfileMagistrateTopic,
 } from "authoritarian/dist-cjs/interfaces"
 
+import {generateName} from "./modules/generate-name"
 import {verifyGoogleIdToken} from "./modules/verify-google-id-token"
 
 export const createAuthExchanger = ({
-	profileMagistrate,
 	publicKey,
 	privateKey,
 	oAuth2Client,
 	claimsVanguard,
 	googleClientId,
+	profileMagistrate,
 	accessTokenExpiresIn,
 	refreshTokenExpiresIn,
 }: {
 	publicKey: string
 	privateKey: string
 	googleClientId: string
-	profileMagistrate: ProfileMagistrateTopic
 	oAuth2Client: OAuth2Client
 	accessTokenExpiresIn: string
 	refreshTokenExpiresIn: string
 	claimsVanguard: ClaimsVanguardTopic
+	profileMagistrate: ProfileMagistrateTopic
 }): AuthExchangerTopic => ({
 
 	/**
@@ -43,7 +44,7 @@ export const createAuthExchanger = ({
 		googleToken: string
 	}): Promise<AuthTokens> {
 		if (googleToken) {
-			const {googleId, realname, picture} = await verifyGoogleIdToken({
+			const {googleId, avatar} = await verifyGoogleIdToken({
 				googleToken,
 				oAuth2Client,
 				googleClientId
@@ -66,20 +67,15 @@ export const createAuthExchanger = ({
 				expiresIn: accessTokenExpiresIn
 			})
 
-			const profile = await profileMagistrate.getPublicProfile({userId})
+			const profile = await profileMagistrate.getProfile({userId})
 
 			if (!profile)
-				await profileMagistrate.setFullProfile({
+				await profileMagistrate.setProfile({
 					accessToken,
 					profile: {
 						userId,
-						public: {
-							picture,
-							nickname: "",
-						},
-						private: {
-							realname,
-						}
+						avatar,
+						nickname: generateName(),
 					}
 				})
 

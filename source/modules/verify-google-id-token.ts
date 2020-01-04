@@ -18,7 +18,7 @@ export async function verifyGoogleIdToken({
 
 	const payload = ticket.getPayload()
 	const googleId = payload.sub
-	const {picture, name: realname} = payload
+	const {picture: avatar} = payload
 
-	return {googleId, realname, picture}
+	return {googleId, avatar}
 }

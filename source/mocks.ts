@@ -7,6 +7,8 @@ import {
 	ProfileMagistrateTopic,
 } from "authoritarian/dist-cjs/interfaces"
 
+import {generateName} from "./modules/generate-name"
+
 export const privateKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIJKQIBAAKCAgEAnHbuNcNWKAldKtOS1j6LUsWyeXGI6Nm3J5kd8tVA36nbCw5k
 FY8zD9eaettR+s+vxwLbc5q64BUSNp/WoXUoutInIFRKIZkE+afzbM0IhXMjWN0X
@@ -78,13 +80,12 @@ Fpinp9HkYVWHX/SGQKdP6+UCAwEAAQ==
 
 export async function createMockAccessToken({expiresIn}: {expiresIn: string}) {
 	return signToken<AccessPayload>({
-		privateKey,
 		expiresIn,
+		privateKey,
 		payload: {
 			user: {
 				userId: "123",
-				public: {claims: {premium: true}},
-				private: {claims: {}}
+				claims: {premium: true},
 			}
 		},
 	})
@@ -92,8 +93,8 @@ export async function createMockAccessToken({expiresIn}: {expiresIn: string}) {
 
 export async function createMockRefreshToken({expiresIn}: {expiresIn: string}) {
 	return signToken<RefreshPayload>({
-		privateKey,
 		expiresIn,
+		privateKey,
 		payload: {userId: "123"},
 	})
 }
@@ -102,49 +103,32 @@ export class MockClaimsVanguard implements ClaimsVanguardTopic {
 	async createUser({googleId}) {
 		return {
 			userId: "fake-user-id",
-			public: {claims: {}},
-			private: {claims: {}}
+			claims: {},
 		}
 	}
 	async getUser({userId}) {
 		return {
 			userId: userId,
-			public: {claims: {}},
-			private: {claims: {}}
+			claims: {},
 		}
 	}
-	async setClaims({userId, publicClaims, privateClaims}) {
+	async setClaims({userId, claims}) {
 		return {
 			userId,
-			public: {claims: publicClaims},
-			private: {claims: privateClaims}
+			claims,
 		}
 	}
 }
 
 export class MockProfileMagistrate implements ProfileMagistrateTopic {
-	async getPublicProfile({userId}) {
+	async getProfile({userId}) {
 		return {
 			userId,
-			public: {
-				picture: "fake-picture",
-				nickname: "fake-chaser3275",
-			}
+			avatar: "fake-picture",
+			nickname: generateName(),
 		}
 	}
-	async getFullProfile({accessToken, userId}) {
-		return {
-			userId,
-			public: {
-				picture: "fake-picture",
-				nickname: "fake-chaser3275",
-			},
-			private: {
-				realname: "Fake Chase Moskal",
-			}
-		}
-	}
-	async setFullProfile({accessToken, profile}) {
+	async setProfile({accessToken, profile}) {
 		return null
 	}
 }

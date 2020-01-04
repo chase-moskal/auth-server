@@ -6,12 +6,7 @@ import {UserRecord} from "../interfaces"
 
 export const recordToUser = (record: UserRecord): User => ({
 	userId: record._id.toHexString(),
-	public: {
-		claims: record.public.claims
-	},
-	private: {
-		claims: record.private.claims
-	}
+	claims: record.claims
 })
 
 export async function findUserById(
