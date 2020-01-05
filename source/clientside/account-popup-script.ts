@@ -16,6 +16,7 @@ export const regex = (json: JsonRegex) => json
 	? new RegExp(json.pattern, json.flags)
 	: null
 
+// called by google library after it loads
 window.start = async function start() {
 	const {settings} = window
 	const auth = prepareAuth(settings.googleAuthDetails)
