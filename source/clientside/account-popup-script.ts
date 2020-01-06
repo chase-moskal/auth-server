@@ -20,7 +20,7 @@ export const regex = (json: JsonRegex) => json
 window.start = async function start() {
 	const {settings} = window
 	const auth = prepareAuth(settings.googleAuthDetails)
-	accountPopupHost({
+	await accountPopupHost({
 		auth,
 		cors: {
 			allowed: regex(settings.cors.allowed),

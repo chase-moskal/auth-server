@@ -12,9 +12,6 @@ export const createClaimsVanguard = ({usersCollection}: {
 	usersCollection: Collection
 }): ClaimsVanguardTopic => ({
 
-	/**
-	 * Fetch or create a user in the database
-	 */
 	async createUser({googleId}): Promise<User> {
 		const found = await usersCollection.findOne<UserRecord>({googleId})
 		let user: User

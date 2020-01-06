@@ -12,7 +12,7 @@
 	},
 	"usersDatabase": {
 		"uri": "mongodb+srv://admin:admin@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
-		"dbName": "users",
+		"dbName": "authServer",
 		"collectionName": "users"
 	},
 	"profileServerConnection": {

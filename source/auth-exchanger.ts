@@ -2,7 +2,6 @@
 import {OAuth2Client} from "google-auth-library"
 import {signToken, verifyToken} from "authoritarian/dist-cjs/crypto"
 import {
-	User,
 	AuthTokens,
 	AccessToken,
 	RefreshToken,
