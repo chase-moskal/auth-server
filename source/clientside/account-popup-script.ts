@@ -1,9 +1,11 @@
 
-import {accountPopupHost}
-	from "authoritarian/dist-cjs/account-popup/account-popup-host"
+import {setupPopupMessaging}
+	from "authoritarian/dist-cjs/account-popup/setup-popup-messaging"
 
+import {unpackRegex} from "./toolbox/unpack-regex"
 import {prepareAuth} from "./services/prepare-auth"
-import {AccountPopupSettings, JsonRegex} from "./interfaces"
+
+import {AccountPopupSettings} from "./interfaces"
 
 declare global {
 	interface Window {
@@ -12,19 +14,15 @@ declare global {
 	}
 }
 
-export const regex = (json: JsonRegex) => json
-	? new RegExp(json.pattern, json.flags)
-	: null
-
 // called by google library after it loads
 window.start = async function start() {
 	const {settings} = window
 	const auth = prepareAuth(settings.googleAuthDetails)
-	await accountPopupHost({
+	await setupPopupMessaging({
 		auth,
 		cors: {
-			allowed: regex(settings.cors.allowed),
-			forbidden: regex(settings.cors.forbidden),
+			allowed: unpackRegex(settings.cors.allowed),
+			forbidden: unpackRegex(settings.cors.forbidden),
 		}
 	})
 }

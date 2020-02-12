@@ -1,9 +1,7 @@
 
 import {Collection, ObjectId} from "mongodb"
-import {
-	User,
-	ClaimsVanguardTopic,
-} from "authoritarian/dist-cjs/interfaces"
+import {User, ClaimsVanguardTopic}
+	from "authoritarian/dist-cjs/interfaces"
 
 import {UserRecord} from "./interfaces"
 import {findUserById, recordToUser} from "./modules/user-database"
@@ -29,10 +27,6 @@ export const createClaimsVanguard = ({usersCollection}: {
 		}
 
 		return user
-	},
-
-	async getUser({userId}): Promise<User> {
-		return findUserById(usersCollection, userId)
 	},
 
 	async setClaims({userId, claims = {}}) {

@@ -7,6 +7,7 @@ import {
 	RefreshToken,
 	AccessPayload,
 	RefreshPayload,
+	ClaimsDealerTopic,
 	AuthExchangerTopic,
 	ClaimsVanguardTopic,
 	ProfileMagistrateTopic,
@@ -19,6 +20,7 @@ export const createAuthExchanger = ({
 	publicKey,
 	privateKey,
 	oAuth2Client,
+	claimsDealer,
 	claimsVanguard,
 	googleClientId,
 	profileMagistrate,
@@ -31,6 +33,7 @@ export const createAuthExchanger = ({
 	oAuth2Client: OAuth2Client
 	accessTokenExpiresIn: string
 	refreshTokenExpiresIn: string
+	claimsDealer: ClaimsDealerTopic
 	claimsVanguard: ClaimsVanguardTopic
 	profileMagistrate: ProfileMagistrateTopic
 }): AuthExchangerTopic => ({
@@ -91,7 +94,7 @@ export const createAuthExchanger = ({
 	async authorize({refreshToken}: {refreshToken: RefreshToken}): Promise<AccessToken> {
 		const data = await verifyToken<RefreshPayload>({token: refreshToken, publicKey})
 		const {userId} = data.payload
-		const user = await claimsVanguard.getUser({userId})
+		const user = await claimsDealer.getUser({userId})
 		const accessToken = await signToken<AccessPayload>({
 			privateKey,
 			payload: {user},

@@ -1,18 +1,11 @@
 
 import {ObjectId} from "mongodb"
-import {
-	Claims,
-	AuthExchangerTopic,
-	ClaimsVanguardTopic,
-} from "authoritarian/dist-cjs/interfaces"
-import {Api} from "renraku/dist-cjs/interfaces"
+import {Claims, AuthApi}
+	from "authoritarian/dist-cjs/interfaces"
 
 import {AccountPopupConfig} from "./clientside/interfaces"
 
-export interface AuthApi extends Api<AuthApi> {
-	authExchanger: AuthExchangerTopic
-	claimsVanguard: ClaimsVanguardTopic
-}
+export {AuthApi}
 
 export interface Config {
 	port: number

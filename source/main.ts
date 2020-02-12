@@ -16,6 +16,7 @@ import {createProfileClient} from "./modules/create-profile-client"
 import {createMongoCollection} from "./modules/create-mongo-collection"
 
 import {Config, AuthApi} from "./interfaces"
+import {createClaimsDealer} from "./claims-dealer"
 import {createAuthExchanger} from "./auth-exchanger"
 import {createClaimsVanguard} from "./claims-vanguard"
 
@@ -44,10 +45,12 @@ export async function main() {
 		url: config.profileServerConnection.url
 	})
 
+	const claimsDealer = createClaimsDealer({usersCollection})
 	const claimsVanguard = createClaimsVanguard({usersCollection})
 	const authExchanger = createAuthExchanger({
 		publicKey,
 		privateKey,
+		claimsDealer,
 		claimsVanguard,
 		profileMagistrate,
 		accessTokenExpiresIn: "20m",
@@ -92,6 +95,13 @@ export async function main() {
 		logger: console,
 		debug: config.debug,
 		exposures: {
+			claimsDealer: {
+				exposed: claimsDealer,
+				cors: {
+					allowed: /^http\:\/\/localhost\:8\d{3}$/i,
+					forbidden: null
+				}
+			},
 			claimsVanguard: {
 				exposed: claimsVanguard,
 				whitelist: {}
