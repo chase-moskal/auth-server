@@ -1,10 +1,10 @@
 
 import {Collection, ObjectId} from "mongodb"
 import {User, ClaimsVanguardTopic}
-	from "authoritarian/dist-cjs/interfaces"
+	from "authoritarian/dist/interfaces.js"
 
-import {UserRecord} from "./interfaces"
-import {findUserById, recordToUser} from "./modules/user-database"
+import {UserRecord} from "./interfaces.js"
+import {findUserById, recordToUser} from "./modules/user-database.js"
 
 export const createClaimsVanguard = ({usersCollection}: {
 	usersCollection: Collection

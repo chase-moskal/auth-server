@@ -1,11 +1,11 @@
 
 import {setupPopupMessaging}
-	from "authoritarian/dist-cjs/account-popup/setup-popup-messaging"
+	from "authoritarian/dist/account-popup/setup-popup-messaging.js"
 
-import {unpackRegex} from "./toolbox/unpack-regex"
-import {prepareAuth} from "./services/prepare-auth"
+import {unpackRegex} from "./toolbox/unpack-regex.js"
+import {prepareAuth} from "./services/prepare-auth.js"
 
-import {AccountPopupSettings} from "./interfaces"
+import {AccountPopupSettings} from "./interfaces.js"
 
 declare global {
 	interface Window {

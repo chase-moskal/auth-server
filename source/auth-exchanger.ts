@@ -1,6 +1,7 @@
 
 import {OAuth2Client} from "google-auth-library"
-import {signToken, verifyToken} from "authoritarian/dist-cjs/crypto"
+import {tokenSign} from "redcrypto/dist/token-sign.js"
+import {tokenVerify} from "redcrypto/dist/token-verify.js"
 import {
 	AuthTokens,
 	AccessToken,
@@ -11,10 +12,10 @@ import {
 	AuthExchangerTopic,
 	ClaimsVanguardTopic,
 	ProfileMagistrateTopic,
-} from "authoritarian/dist-cjs/interfaces"
+} from "authoritarian/dist/interfaces.js"
 
-import {generateName} from "./modules/generate-name"
-import {verifyGoogleIdToken} from "./modules/verify-google-id-token"
+import {generateName} from "./modules/generate-name.js"
+import {verifyGoogleIdToken} from "./modules/verify-google-id-token.js"
 
 export const createAuthExchanger = ({
 	publicKey,
@@ -24,15 +25,15 @@ export const createAuthExchanger = ({
 	claimsVanguard,
 	googleClientId,
 	profileMagistrate,
-	accessTokenExpiresIn,
-	refreshTokenExpiresIn,
+	accessTokenExpiresMilliseconds,
+	refreshTokenExpiresMilliseconds,
 }: {
 	publicKey: string
 	privateKey: string
 	googleClientId: string
 	oAuth2Client: OAuth2Client
-	accessTokenExpiresIn: string
-	refreshTokenExpiresIn: string
+	accessTokenExpiresMilliseconds: number
+	refreshTokenExpiresMilliseconds: number
 	claimsDealer: ClaimsDealerTopic
 	claimsVanguard: ClaimsVanguardTopic
 	profileMagistrate: ProfileMagistrateTopic
@@ -57,16 +58,16 @@ export const createAuthExchanger = ({
 			const user = await claimsVanguard.createUser({googleId})
 			const {userId} = user
 
-			const refreshToken = await signToken<RefreshPayload>({
+			const refreshToken = await tokenSign<RefreshPayload>({
 				privateKey,
 				payload: {userId},
-				expiresIn: refreshTokenExpiresIn
+				expiresMilliseconds: refreshTokenExpiresMilliseconds
 			})
 
-			const accessToken = await signToken<AccessPayload>({
+			const accessToken = await tokenSign<AccessPayload>({
 				privateKey,
 				payload: {user},
-				expiresIn: accessTokenExpiresIn
+				expiresMilliseconds: accessTokenExpiresMilliseconds
 			})
 
 			const profile = await profileMagistrate.getProfile({userId})
@@ -92,13 +93,13 @@ export const createAuthExchanger = ({
 	 * Buy a new access token using a refresh token
 	 */
 	async authorize({refreshToken}: {refreshToken: RefreshToken}): Promise<AccessToken> {
-		const data = await verifyToken<RefreshPayload>({token: refreshToken, publicKey})
+		const data = await tokenVerify<RefreshPayload>({token: refreshToken, publicKey})
 		const {userId} = data.payload
 		const user = await claimsDealer.getUser({userId})
-		const accessToken = await signToken<AccessPayload>({
+		const accessToken = await tokenSign<AccessPayload>({
 			privateKey,
 			payload: {user},
-			expiresIn: accessTokenExpiresIn
+			expiresMilliseconds: accessTokenExpiresMilliseconds
 		})
 		return accessToken
 	}

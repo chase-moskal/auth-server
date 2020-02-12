@@ -1,7 +1,7 @@
 
-import {GoogleAuthDetails} from "../interfaces"
-import {GoogleAuthClient} from "./google-auth-client"
-import {createAuthClient} from "./create-auth-client"
+import {GoogleAuthDetails} from "../interfaces.js"
+import {GoogleAuthClient} from "./google-auth-client.js"
+import {createAuthClient} from "./create-auth-client.js"
 
 export function prepareAuth(googleAuthDetails: GoogleAuthDetails) {
 	return async function auth() {

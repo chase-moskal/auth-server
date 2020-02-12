@@ -1,9 +1,9 @@
 
 import {ObjectId} from "mongodb"
 import {Claims, AuthApi}
-	from "authoritarian/dist-cjs/interfaces"
+	from "authoritarian/dist/interfaces.js"
 
-import {AccountPopupConfig} from "./clientside/interfaces"
+import {AccountPopupConfig} from "./clientside/interfaces.js"
 
 export {AuthApi}
 

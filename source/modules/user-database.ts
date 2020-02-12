@@ -1,8 +1,8 @@
 
 import {Collection, ObjectId} from "mongodb"
-import {User} from "authoritarian/dist-cjs/interfaces"
+import {User} from "authoritarian/dist/interfaces.js"
 
-import {UserRecord} from "../interfaces"
+import {UserRecord} from "../interfaces.js"
 
 export const recordToUser = (record: UserRecord): User => ({
 	userId: record._id.toHexString(),

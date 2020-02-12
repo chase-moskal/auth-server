@@ -1,13 +1,13 @@
 
-import {signToken} from "authoritarian/dist-cjs/crypto"
+import {tokenSign} from "redcrypto/dist/token-sign.js"
 import {
 	AccessPayload,
 	RefreshPayload,
 	ClaimsVanguardTopic,
 	ProfileMagistrateTopic,
-} from "authoritarian/dist-cjs/interfaces"
+} from "authoritarian/dist/interfaces.js"
 
-import {generateName} from "./modules/generate-name"
+import {generateName} from "./modules/generate-name.js"
 
 export const privateKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIJKQIBAAKCAgEAnHbuNcNWKAldKtOS1j6LUsWyeXGI6Nm3J5kd8tVA36nbCw5k
@@ -78,10 +78,12 @@ Fpinp9HkYVWHX/SGQKdP6+UCAwEAAQ==
 -----END PUBLIC KEY-----
 `
 
-export async function createMockAccessToken({expiresIn}: {expiresIn: string}) {
-	return signToken<AccessPayload>({
-		expiresIn,
+export async function createMockAccessToken({expiresMilliseconds}: {
+	expiresMilliseconds: number
+}) {
+	return tokenSign<AccessPayload>({
 		privateKey,
+		expiresMilliseconds,
 		payload: {
 			user: {
 				userId: "123",
@@ -91,10 +93,12 @@ export async function createMockAccessToken({expiresIn}: {expiresIn: string}) {
 	})
 }
 
-export async function createMockRefreshToken({expiresIn}: {expiresIn: string}) {
-	return signToken<RefreshPayload>({
-		expiresIn,
+export async function createMockRefreshToken({expiresMilliseconds}: {
+	expiresMilliseconds: number
+}) {
+	return tokenSign<RefreshPayload>({
 		privateKey,
+		expiresMilliseconds,
 		payload: {userId: "123"},
 	})
 }

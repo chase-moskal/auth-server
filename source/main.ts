@@ -5,20 +5,20 @@ import * as cors from "@koa/cors"
 import * as mount from "koa-mount"
 import * as serve from "koa-static"
 import {OAuth2Client} from "google-auth-library"
-import {apiServer} from "renraku/dist-cjs/api-server"
+import {apiServer} from "renraku/dist/api-server.js"
 
 import {promises as fsPromises} from "fs"
 const read = (path: string) => fsPromises.readFile(path, "utf8")
 
-import {httpHandler} from "./modules/http-handler"
-import {AccountPopupSettings} from "./clientside/interfaces"
-import {createProfileClient} from "./modules/create-profile-client"
-import {createMongoCollection} from "./modules/create-mongo-collection"
+import {httpHandler} from "./modules/http-handler.js"
+import {AccountPopupSettings} from "./clientside/interfaces.js"
+import {createProfileClient} from "./modules/create-profile-client.js"
+import {createMongoCollection} from "./modules/create-mongo-collection.js"
 
-import {Config, AuthApi} from "./interfaces"
-import {createClaimsDealer} from "./claims-dealer"
-import {createAuthExchanger} from "./auth-exchanger"
-import {createClaimsVanguard} from "./claims-vanguard"
+import {Config, AuthApi} from "./interfaces.js"
+import {createClaimsDealer} from "./claims-dealer.js"
+import {createAuthExchanger} from "./auth-exchanger.js"
+import {createClaimsVanguard} from "./claims-vanguard.js"
 
 const getTemplate = async(filename: string) =>
 	pug.compile(await read(`source/clientside/templates/${filename}`))
@@ -53,8 +53,8 @@ export async function main() {
 		claimsDealer,
 		claimsVanguard,
 		profileMagistrate,
-		accessTokenExpiresIn: "20m",
-		refreshTokenExpiresIn: "60d",
+		accessTokenExpiresMilliseconds: 20 * (60 * 1000), // twenty minutes
+		refreshTokenExpiresMilliseconds: 60 * (24 * 60 * 60 * 1000), // sixty days
 		googleClientId: config.google.clientId,
 		oAuth2Client: new OAuth2Client(config.google.clientId),
 	})

@@ -1,6 +1,6 @@
 
 import {MongoClient, Collection} from "mongodb"
-import {MongoDatabaseConfig} from "../interfaces"
+import {MongoDatabaseConfig} from "../interfaces.js"
 
 export async function createMongoCollection({
 	uri,

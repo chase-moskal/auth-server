@@ -1,9 +1,9 @@
 
 import {Collection} from "mongodb"
 import {User, ClaimsDealerTopic}
-	from "authoritarian/dist-cjs/interfaces"
+	from "authoritarian/dist/interfaces.js"
 
-import {findUserById} from "./modules/user-database"
+import {findUserById} from "./modules/user-database.js"
 
 export const createClaimsDealer = ({usersCollection}: {
 	usersCollection: Collection

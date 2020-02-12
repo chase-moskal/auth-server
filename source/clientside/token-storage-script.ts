@@ -1,10 +1,10 @@
 
-import {authShape} from "authoritarian/dist-cjs/shapes"
-import {AuthApi} from "authoritarian/dist-cjs/interfaces"
-import {apiNodeClient} from "renraku/dist-cjs/api-node-client"
-import {crosscallHost} from "crosscall/dist-cjs/crosscall-host"
+import {authShape} from "authoritarian/dist/shapes.js"
+import {AuthApi} from "authoritarian/dist/interfaces.js"
+import {apiNodeClient} from "renraku/dist/api-node-client.js"
+import {crosscallHost} from "crosscall/dist/crosscall-host.js"
 
-import {TokenStorage} from "./services/token-storage"
+import {TokenStorage} from "./services/token-storage.js"
 
 main()
 	.then(() => console.log("🎟️ token script"))

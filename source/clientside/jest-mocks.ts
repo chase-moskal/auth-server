@@ -1,6 +1,8 @@
 
-import {GoogleAuthClientInterface} from "./interfaces"
-import {AuthExchangerTopic, TokenStorageTopic} from "authoritarian/dist-cjs/interfaces"
+import {AuthExchangerTopic, TokenStorageTopic}
+	from "authoritarian/dist/interfaces.js"
+
+import {GoogleAuthClientInterface} from "./interfaces.js"
 
 export class MockStorage implements Storage {
 	key = null

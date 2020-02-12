@@ -1,5 +1,5 @@
 
-import {TokenStorage} from "./token-storage"
+import {TokenStorage} from "./token-storage.js"
 import {
 	createMockAccessToken,
 	createMockRefreshToken,
@@ -31,8 +31,8 @@ describe("token storage", () => {
 
 		it("when access token is available, return it", async() => {
 			const {tokenStorage, storage} = makeMocks()
-			const mockAccessToken = await createMockAccessToken({expiresIn: "10m"})
-			const mockRefreshToken = await createMockRefreshToken({expiresIn: "10m"})
+			const mockAccessToken = await createMockAccessToken({expiresMilliseconds: 10 * (60 * 1000)})
+			const mockRefreshToken = await createMockRefreshToken({expiresMilliseconds: 10 * (60 * 1000)})
 			storage.getItem.mockImplementation((key: string) => {
 				if (key === "refreshToken") return mockRefreshToken
 				else if (key === "accessToken") return mockAccessToken
@@ -43,8 +43,8 @@ describe("token storage", () => {
 
 		it("when access token is missing, use refresh token to get new access token and return it (and save it too)", async() => {
 			const {tokenStorage, storage, authExchanger} = makeMocks()
-			const mockAccessToken = await createMockAccessToken({expiresIn: "10m"})
-			const mockRefreshToken = await createMockRefreshToken({expiresIn: "10m"})
+			const mockAccessToken = await createMockAccessToken({expiresMilliseconds: 10 * (60 * 1000)})
+			const mockRefreshToken = await createMockRefreshToken({expiresMilliseconds: 10 * (60 * 1000)})
 			authExchanger.authorize.mockImplementation(async() => mockAccessToken)
 			storage.getItem.mockImplementation((key: string) => {
 				if (key === "refreshToken") return mockRefreshToken

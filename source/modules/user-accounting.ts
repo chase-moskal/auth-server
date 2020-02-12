@@ -1,5 +1,5 @@
 
-import {User, QueryUserByGoogleId} from "./interfaces"
+import {User, QueryUserByGoogleId} from "./interfaces.js"
 
 export const mockQueryUserByGoogleId: QueryUserByGoogleId = async({
 	googleId

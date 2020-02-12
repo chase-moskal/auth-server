@@ -12,5 +12,5 @@ html
 
 		script.
 			window.settings = !{JSON.stringify(locals.settings)}
-		script(src="account-popup-script.bundle.js")
+		script(type="module" src="account-popup-script.js")
 		script(src="https://apis.google.com/js/platform.js?onload=start" async defer)

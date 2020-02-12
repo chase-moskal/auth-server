@@ -4,13 +4,13 @@ import {
 	AccessToken,
 	TokenStorageTopic,
 	AuthExchangerTopic,
-} from "authoritarian/dist-cjs/interfaces"
+} from "authoritarian/dist/interfaces.js"
 
-import {decodeToken} from "authoritarian/dist-cjs/crypto"
+import {tokenDecode} from "redcrypto/dist/token-decode.js"
 
 const tokenIsValid = (token: string) => {
 	if (token) {
-		const decoded: any = decodeToken({token})
+		const decoded: any = tokenDecode(token)
 		const expired = decoded.exp < (Date.now() / 1000)
 		return !expired
 	}
