@@ -1,5 +1,7 @@
 
-import {OAuth2Client} from "google-auth-library"
+// TODO cjs
+import * as _googleAuth from "google-auth-library"
+
 import {tokenSign} from "redcrypto/dist/token-sign.js"
 import {tokenVerify} from "redcrypto/dist/token-verify.js"
 import {
@@ -31,7 +33,7 @@ export const createAuthExchanger = ({
 	publicKey: string
 	privateKey: string
 	googleClientId: string
-	oAuth2Client: OAuth2Client
+	oAuth2Client: _googleAuth.OAuth2Client
 	accessTokenExpiresMilliseconds: number
 	refreshTokenExpiresMilliseconds: number
 	claimsDealer: ClaimsDealerTopic

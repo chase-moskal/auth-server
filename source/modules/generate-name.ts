@@ -1,10 +1,17 @@
 
-import {
+// TODO cjs
+import mod from "module"
+const require = mod.createRequire(import.meta.url)
+import * as _generatorModule from "unique-names-generator"
+const generatorModule =
+	require("unique-names-generator") as typeof _generatorModule
+
+const {
 	colors,
 	animals,
 	adjectives,
 	uniqueNamesGenerator,
-} from "unique-names-generator"
+} = generatorModule
 
 export function generateName() {
 	return uniqueNamesGenerator({dictionaries: [adjectives, colors, animals]})

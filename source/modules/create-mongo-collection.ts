@@ -1,14 +1,19 @@
 
-import {MongoClient, Collection} from "mongodb"
+// TODO cjs
+import mod from "module"
+const require = mod.createRequire(import.meta.url)
+import * as _mongodb from "mongodb"
+const mongodb = require("mongodb") as typeof _mongodb
+
 import {MongoDatabaseConfig} from "../interfaces.js"
 
 export async function createMongoCollection({
 	uri,
 	dbName,
 	collectionName
-}: MongoDatabaseConfig): Promise<Collection> {
+}: MongoDatabaseConfig): Promise<_mongodb.Collection> {
 
-	const client = new MongoClient(uri, {
+	const client = new mongodb.MongoClient(uri, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})

@@ -1,5 +1,7 @@
 
-import {ObjectId} from "mongodb"
+// TODO cjs
+import * as mongodb from "mongodb"
+
 import {Claims, AuthApi}
 	from "authoritarian/dist/interfaces.js"
 
@@ -35,7 +37,7 @@ export interface profileServerConnection {
 }
 
 export interface UserRecord {
-	_id?: ObjectId
+	_id?: mongodb.ObjectId
 	claims: Claims
 	googleId: string
 }

@@ -1,14 +1,23 @@
 
-import * as pug from "pug"
-import * as Koa from "koa"
-import * as cors from "@koa/cors"
-import * as mount from "koa-mount"
-import * as serve from "koa-static"
-import {OAuth2Client} from "google-auth-library"
-import {apiServer} from "renraku/dist/api-server.js"
+// TODO cjs
+import mod from "module"
+const require = mod.createRequire(import.meta.url)
+import * as _pug from "pug"
+import * as _Koa from "koa"
+import * as _cors from "@koa/cors"
+import * as _mount from "koa-mount"
+import * as _serve from "koa-static"
+import * as _googleAuth from "google-auth-library"
+const pug: typeof _pug = require("pug") as typeof _pug
+const Koa: typeof _Koa = require("koa") as typeof _Koa
+const cors: typeof _cors = require("@koa/cors") as typeof _cors
+const mount: typeof _mount = require("koa-mount") as typeof _mount
+const serve: typeof _serve = require("koa-static") as typeof _serve
+const googleAuth: typeof _googleAuth =
+	require("google-auth-library") as typeof _googleAuth
 
-import {promises as fsPromises} from "fs"
-const read = (path: string) => fsPromises.readFile(path, "utf8")
+import {promises} from "fs"
+import {apiServer} from "renraku/dist/api-server.js"
 
 import {httpHandler} from "./modules/http-handler.js"
 import {AccountPopupSettings} from "./clientside/interfaces.js"
@@ -19,6 +28,8 @@ import {Config, AuthApi} from "./interfaces.js"
 import {createClaimsDealer} from "./claims-dealer.js"
 import {createAuthExchanger} from "./auth-exchanger.js"
 import {createClaimsVanguard} from "./claims-vanguard.js"
+
+const read = (path: string) => promises.readFile(path, "utf8")
 
 const getTemplate = async(filename: string) =>
 	pug.compile(await read(`source/clientside/templates/${filename}`))
@@ -56,7 +67,7 @@ export async function main() {
 		accessTokenExpiresMilliseconds: 20 * (60 * 1000), // twenty minutes
 		refreshTokenExpiresMilliseconds: 60 * (24 * 60 * 60 * 1000), // sixty days
 		googleClientId: config.google.clientId,
-		oAuth2Client: new OAuth2Client(config.google.clientId),
+		oAuth2Client: new googleAuth.OAuth2Client(config.google.clientId),
 	})
 
 	//
