@@ -52,7 +52,7 @@ export async function main() {
 		tokenStorage: await getTemplate("token-storage.pug")
 	}
 
-	const {profileMagistrate} = createProfileClient({
+	const {profileMagistrate} = await createProfileClient({
 		url: config.profileServerConnection.url
 	})
 
@@ -102,7 +102,7 @@ export async function main() {
 	// json rpc api
 	//
 
-	const {koa: apiKoa} = apiServer<AuthApi>({
+	const {koa: apiKoa} = await apiServer<AuthApi>({
 		logger: console,
 		debug: config.debug,
 		exposures: {

@@ -1,12 +1,14 @@
 
 import {GoogleAuthDetails} from "../interfaces.js"
 import {GoogleAuthClient} from "./google-auth-client.js"
-import {createAuthClient} from "./create-auth-client.js"
+import {createAuthExchangerClient} from "./create-auth-client.js"
 
 export function prepareAuth(googleAuthDetails: GoogleAuthDetails) {
 	return async function auth() {
 		const googleAuthClient = new GoogleAuthClient(googleAuthDetails)
-		const {authExchanger} = createAuthClient({url: `${location.origin}/api`})
+		const {authExchanger} = await createAuthExchangerClient({
+			url: `${location.origin}/api`
+		})
 
 		await googleAuthClient.initGoogleAuth()
 		googleAuthClient.prepareGoogleSignOutButton({
