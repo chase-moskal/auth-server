@@ -15,7 +15,7 @@ export interface Config {
 	google: GoogleConfig
 	accountPopup: AccountPopupConfig
 	usersDatabase: MongoDatabaseConfig
-	profileServerConnection: profileServerConnection
+	profileServerConnection: ProfileServerConnection
 }
 
 export interface MongoDatabaseConfig {
@@ -32,8 +32,8 @@ export interface GoogleConfig {
 	clientSecret: string
 }
 
-export interface profileServerConnection {
-	url: string
+export interface ProfileServerConnection {
+	authServerOrigin: string
 }
 
 export interface UserRecord {

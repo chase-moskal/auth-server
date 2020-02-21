@@ -54,7 +54,7 @@ export async function main() {
 	}
 
 	const profileMagistrate = await createProfileMagistrateClient({
-		url: config.profileServerConnection.url
+		authServerOrigin: config.profileServerConnection.authServerOrigin
 	})
 
 	const claimsDealer = createClaimsDealer({usersCollection})

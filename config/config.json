@@ -16,7 +16,7 @@
 		"collectionName": "users"
 	},
 	"profileServerConnection": {
-		"url": "http://localhost:8001/api"
+		"authServerOrigin": "http://localhost:8001"
 	},
 	"google": {
 		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com",
