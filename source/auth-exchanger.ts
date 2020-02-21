@@ -72,17 +72,22 @@ export const createAuthExchanger = ({
 				expiresMilliseconds: accessTokenExpiresMilliseconds
 			})
 
-			const profile = await profileMagistrate.getProfile({userId})
-
-			if (!profile)
-				await profileMagistrate.setProfile({
-					accessToken,
-					profile: {
-						userId,
-						avatar,
-						nickname: generateName(),
-					}
-				})
+			try {
+				const profile = await profileMagistrate.getProfile({userId})
+				if (!profile)
+					await profileMagistrate.setProfile({
+						accessToken,
+						profile: {
+							userId,
+							avatar,
+							nickname: generateName(),
+						}
+					})
+			}
+			catch (error) {
+				throw new Error(`communications with profile magistrate `
+					+ `failed: ${error.message}`)
+			}
 
 			return {refreshToken, accessToken}
 		}

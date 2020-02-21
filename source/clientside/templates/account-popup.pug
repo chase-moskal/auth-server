@@ -12,5 +12,13 @@ html
 
 		script.
 			window.settings = !{JSON.stringify(locals.settings)}
-		script(type="module" src="account-popup-script.js")
-		script(src="https://apis.google.com/js/platform.js?onload=start" async defer)
+			function googleReady() {
+				if (window.start) start()
+				else window.startReady = true
+			}
+
+		script(async defer type="importmap-shim" src="importmap.json")
+		script(async defer type="module-shim" src="account-popup-script.js")
+		script(async defer src="https://unpkg.com/es-module-shims@0.4.6/dist/es-module-shims.js")
+
+		script(async defer src="https://apis.google.com/js/platform.js?onload=googleReady")

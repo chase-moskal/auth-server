@@ -18,10 +18,11 @@ const googleAuth: typeof _googleAuth =
 
 import {promises} from "fs"
 import {apiServer} from "renraku/dist/api-server.js"
+import {createProfileMagistrateClient}
+	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
 
 import {httpHandler} from "./modules/http-handler.js"
 import {AccountPopupSettings} from "./clientside/interfaces.js"
-import {createProfileClient} from "./modules/create-profile-client.js"
 import {createMongoCollection} from "./modules/create-mongo-collection.js"
 
 import {Config, AuthApi} from "./interfaces.js"
@@ -52,7 +53,7 @@ export async function main() {
 		tokenStorage: await getTemplate("token-storage.pug")
 	}
 
-	const {profileMagistrate} = await createProfileClient({
+	const profileMagistrate = await createProfileMagistrateClient({
 		url: config.profileServerConnection.url
 	})
 
@@ -132,8 +133,20 @@ export async function main() {
 	//
 
 	new Koa()
+
+		// account popup and token storage
 		.use(mount("/html", htmlKoa))
+
+		// serving up the node_modules for local dev
+		.use(mount("/node_modules", new Koa()
+			.use(cors())
+			.use(serve("node_modules"))
+		))
+
+		// renraku json rpc api
 		.use(mount("/api", apiKoa))
+
+		// start the server
 		.listen(config.port)
 
 	console.log(`🌐 auth-server on ${config.port}`)

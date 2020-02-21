@@ -9,12 +9,12 @@ import {AccountPopupSettings} from "./interfaces.js"
 
 declare global {
 	interface Window {
+		startReady: boolean
 		start: () => Promise<void>
 		settings: AccountPopupSettings
 	}
 }
 
-// called by google library after it loads
 window.start = async function start() {
 	const {settings} = window
 	const auth = prepareAuth(settings.googleAuthDetails)
@@ -26,3 +26,5 @@ window.start = async function start() {
 		}
 	})
 }
+
+if (window.startReady) window.start()

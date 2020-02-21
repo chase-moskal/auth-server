@@ -9,9 +9,10 @@
 	"type": "module",
 	"main": "dist/main.js",
 	"scripts": {
-		"prepare": "run-s clean compile test",
-		"clean": "rm -rf dist && mkdir dist",
+		"prepare": "run-s clean && run-p compile importmap && run-s test",
+		"clean": "rm -rf dist && mkdir -p dist/clientside",
 		"compile": "tsc",
+		"importmap": "importly --host=node_modules < package.json > dist/clientside/importmap.json",
 		"watch": "tsc -w",
 		"generate-keys": "./node_modules/authoritarian/generate-keys && mv private.pem config/auth-server.private.pem && mv public.pem config/auth-server.public.pem",
 		"start": "node dist/main",
@@ -32,6 +33,7 @@
 		"crosscall": "0.0.6-dev.16",
 		"express": "^4.17.1",
 		"google-auth-library": "^5.7.0",
+		"importly": "0.1.0-dev.0",
 		"koa": "^2.11.0",
 		"koa-bodyparser": "^4.2.1",
 		"koa-mount": "^4.0.0",
@@ -40,6 +42,7 @@
 		"passport": "^0.4.1",
 		"passport-google-oauth": "^2.0.0",
 		"pug": "^2.0.4",
+		"redcrypto": "0.0.0-dev.3",
 		"renraku": "0.0.0-dev.19",
 		"sinon": "^8.0.2",
 		"unique-names-generator": "^4.1.1"
