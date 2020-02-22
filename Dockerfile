@@ -1,11 +1,11 @@
 
-FROM node:12
+FROM node:13
 
 RUN mkdir /app
 WORKDIR /app
 
 COPY . .
-RUN npm install
+RUN npm install --production
 
 EXPOSE 8080
 CMD [ "npm", "start" ]
