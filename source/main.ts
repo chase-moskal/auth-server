@@ -30,6 +30,11 @@ import {createClaimsDealer} from "./claims-dealer.js"
 import {createAuthExchanger} from "./auth-exchanger.js"
 import {createClaimsVanguard} from "./claims-vanguard.js"
 
+const paths = {
+	config: "mount/config",
+	secrets: "mount/secrets",
+}
+
 const read = (path: string) => promises.readFile(path, "utf8")
 
 const getTemplate = async(filename: string) =>
@@ -38,14 +43,14 @@ const getTemplate = async(filename: string) =>
 main().catch(error => console.error(error))
 
 export async function main() {
-	const config: Config = JSON.parse(await read("config/config.json"))
+	const config: Config = JSON.parse(await read(`${paths.config}/config.json`))
 
 	//
 	// initialization
 	//
 
-	const publicKey = await read("config/auth-server.public.pem")
-	const privateKey = await read("config/auth-server.private.pem")
+	const publicKey = await read(`${paths.secrets}/auth-server.public.pem`)
+	const privateKey = await read(`${paths.secrets}/auth-server.private.pem`)
 	const usersCollection = await createMongoCollection(config.usersDatabase)
 
 	const templates = {
