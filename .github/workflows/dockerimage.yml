@@ -1,0 +1,20 @@
+
+name: docker build and push tags
+on:
+  create:
+    tags:
+      - v*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: npm install and build
+      run: npm install && npm run prepare
+    - name: docker build and push
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: chasemoskal/auth-server
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tag_names: true
