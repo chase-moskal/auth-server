@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker run --mount type=bind,source=$(pwd)/mount,target=/app/mount chasemoskal/auth-server
