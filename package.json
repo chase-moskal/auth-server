@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"name": "auth-server",
-	"version": "0.0.0-dev.6",
+	"version": "0.0.0-dev.7",
 	"description": "example standalone auth server",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
@@ -29,7 +29,7 @@
 	"homepage": "https://github.com/chase-moskal/auth-server#readme",
 	"dependencies": {
 		"@koa/cors": "^3.0.0",
-		"authoritarian": "0.0.0-dev.38",
+		"authoritarian": "0.0.0-dev.39",
 		"crosscall": "0.0.6-dev.18",
 		"express": "^4.17.1",
 		"google-auth-library": "^5.10.0",
@@ -43,7 +43,7 @@
 		"passport-google-oauth": "^2.0.0",
 		"pug": "^2.0.4",
 		"redcrypto": "0.0.0-dev.4",
-		"renraku": "0.0.0-dev.21",
+		"renraku": "0.0.0-dev.22",
 		"sinon": "^9.0.0",
 		"unique-names-generator": "^4.2.0"
 	},

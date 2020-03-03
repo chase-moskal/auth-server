@@ -1,10 +1,10 @@
 
+import {unpackCorsConfig}
+	from "authoritarian/dist/toolbox/unpack-cors-config.js"
 import {setupPopupMessaging}
 	from "authoritarian/dist/account-popup/setup-popup-messaging.js"
 
-import {unpackRegex} from "./toolbox/unpack-regex.js"
 import {prepareAuth} from "./services/prepare-auth.js"
-
 import {AccountPopupSettings} from "./interfaces.js"
 
 declare global {
@@ -20,10 +20,7 @@ window.start = async function start() {
 	const auth = prepareAuth(settings.googleAuthDetails)
 	await setupPopupMessaging({
 		auth,
-		cors: {
-			allowed: unpackRegex(settings.cors.allowed),
-			forbidden: unpackRegex(settings.cors.forbidden),
-		}
+		cors: unpackCorsConfig(settings.cors)
 	})
 }
 

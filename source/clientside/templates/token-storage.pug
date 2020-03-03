@@ -8,6 +8,8 @@ html
 	body
 		h1 Token API
 
+		script.
+			window.settings = !{JSON.stringify(locals.settings)}
 		script(type="importmap-shim" src="importmap.json")
 		script(type="module-shim" src="token-storage-script.js")
 		script(src="https://unpkg.com/es-module-shims@0.4.6/dist/es-module-shims.js")

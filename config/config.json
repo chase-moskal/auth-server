@@ -1,10 +1,37 @@
 {
 	"port": 8000,
 	"debug": true,
+	"tokenStorage": {
+		"cors": {
+			"allowed": {
+				"pattern": "^http:\/\/demo:8\\d{3}$",
+				"flags": "i"
+			},
+			"forbidden": null
+		}
+	},
 	"accountPopup": {
 		"cors": {
 			"allowed": {
-				"pattern": "^http:\/\/localhost:8\\d{3}$",
+				"pattern": "^http:\/\/demo:8\\d{3}$",
+				"flags": "i"
+			},
+			"forbidden": null
+		}
+	},
+	"authExchanger": {
+		"cors": {
+			"allowed": {
+				"pattern": "^http:\/\/demo:8\\d{3}$",
+				"flags": "i"
+			},
+			"forbidden": null
+		}
+	},
+	"claimsDealer": {
+		"cors": {
+			"allowed": {
+				"pattern": "^http:\/\/demo:8\\d{3}$",
 				"flags": "i"
 			},
 			"forbidden": null
@@ -23,6 +50,6 @@
 		"clientSecret": "ZbQ_ADbgMca4YJ5KWcR0FNLA",
 		"callbackUrl": "",
 		"scope": "profile email",
-		"redirectUri": "http://localhost:8000/html/account-popup"
+		"redirectUri": "http://demo:8000/html/account-popup"
 	}
 }

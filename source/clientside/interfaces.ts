@@ -1,16 +1,11 @@
 
-export interface JsonRegex {
-	pattern: string
-	flags: string
-}
-
-export interface CorsConfig {
-	allowed: JsonRegex
-	forbidden?: JsonRegex
-}
-
+import {CorsConfig} from "authoritarian/dist/interfaces.js"
 
 export interface AccountPopupConfig {
+	cors: CorsConfig
+}
+
+export interface TokenStorageConfig {
 	cors: CorsConfig
 }
 

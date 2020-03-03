@@ -20,10 +20,13 @@ import {promises} from "fs"
 import {apiServer} from "renraku/dist/api-server.js"
 import {createProfileMagistrateClient}
 	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
+import {unpackCorsConfig}
+	from "authoritarian/dist/toolbox/unpack-cors-config.js"
 
 import {httpHandler} from "./modules/http-handler.js"
-import {AccountPopupSettings} from "./clientside/interfaces.js"
 import {createMongoCollection} from "./modules/create-mongo-collection.js"
+import {AccountPopupSettings, TokenStorageConfig}
+	from "./clientside/interfaces.js"
 
 import {Config, AuthApi} from "./interfaces.js"
 import {createClaimsDealer} from "./claims-dealer.js"
@@ -83,7 +86,8 @@ export async function main() {
 		// token storage
 		.use(httpHandler("get", "/token-storage", async() => {
 			console.log("/token-storage")
-			return templates.tokenStorage()
+			const settings: TokenStorageConfig = config.tokenStorage
+			return templates.tokenStorage({settings})
 		}))
 
 		// account popup
@@ -111,10 +115,7 @@ export async function main() {
 		exposures: {
 			claimsDealer: {
 				exposed: claimsDealer,
-				cors: {
-					allowed: /^http\:\/\/localhost\:8\d{3}$/i,
-					forbidden: null
-				}
+				cors: unpackCorsConfig(config.claimsDealer.cors)
 			},
 			claimsVanguard: {
 				exposed: claimsVanguard,
@@ -122,10 +123,7 @@ export async function main() {
 			},
 			authExchanger: {
 				exposed: authExchanger,
-				cors: {
-					allowed: /^http\:\/\/localhost\:8\d{3}$/i,
-					forbidden: null
-				}
+				cors: unpackCorsConfig(config.authExchanger.cors)
 			}
 		}
 	})

@@ -2,10 +2,11 @@
 // TODO cjs
 import * as mongodb from "mongodb"
 
-import {Claims, AuthApi}
+import {Claims, AuthApi, CorsConfig}
 	from "authoritarian/dist/interfaces.js"
 
-import {AccountPopupConfig} from "./clientside/interfaces.js"
+import {AccountPopupConfig, TokenStorageConfig}
+	from "./clientside/interfaces.js"
 
 export {AuthApi}
 
@@ -13,9 +14,20 @@ export interface Config {
 	port: number
 	debug: boolean
 	google: GoogleConfig
+	tokenStorage: TokenStorageConfig
 	accountPopup: AccountPopupConfig
+	claimsDealer: ClaimsDealerConfig
 	usersDatabase: MongoDatabaseConfig
+	authExchanger: AuthExchangerConfig
 	profileServerConnection: ProfileServerConnection
+}
+
+export interface ClaimsDealerConfig {
+	cors: CorsConfig
+}
+
+export interface AuthExchangerConfig {
+	cors: CorsConfig
 }
 
 export interface MongoDatabaseConfig {
