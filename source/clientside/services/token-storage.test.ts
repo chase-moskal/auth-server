@@ -1,79 +1,107 @@
 
+import {Suite} from "cynic"
+
 import {TokenStorage} from "./token-storage.js"
 import {
 	createMockAccessToken,
 	createMockRefreshToken,
-} from "../../mocks"
-import {
-	MockStorage,
-	MockAuthExchanger,
-} from "../jest-mocks"
+} from "../../mocks.js"
+
+import {fn} from "../../testing.js"
 
 const makeMocks = () => {
-	const storage = new MockStorage()
-	const authExchanger = new MockAuthExchanger()
+	const storage = {
+		length: 0,
+		key: fn(),
+		clear: fn(),
+		getItem: fn(),
+		setItem: fn(),
+		removeItem: fn(),
+	}
+	const authExchanger = {
+		authorize: fn(),
+		authenticateViaGoogle: fn(),
+	}
 	const tokenStorage = new TokenStorage({storage, authExchanger})
 	return {tokenStorage, storage, authExchanger}
 }
 
-describe("token storage", () => {
-	describe("writeTokens()", () => {
+const tenMinutes = 10 * (60 * 1000)
 
-		it("stores tokens in storage", async() => {
+export default <Suite>{
+	"writeTokens()": {
+		"stores tokens in storage": async() => {
 			const {tokenStorage, storage} = makeMocks()
 			await tokenStorage.writeTokens({refreshToken: "r123", accessToken: "a123"})
-			expect(storage.setItem.mock.calls).toContainEqual(["refreshToken", "r123"])
-			expect(storage.setItem.mock.calls).toContainEqual(["accessToken", "a123"])
-		})
-
-	})
-	describe("passiveCheck()", () => {
-
-		it("when access token is available, return it", async() => {
+			const verifyCall = (k: string, v: any) => !!storage.setItem.mock.calls
+				.find(({args}) => {
+					const [key, value] = args
+					return (key === k) && (value === v)
+				})
+			return (
+				verifyCall("refreshToken", "r123") &&
+				verifyCall("accessToken", "a123")
+			)
+		},
+	},
+	"passiveCheck()": {
+		"return available access token": async() => {
 			const {tokenStorage, storage} = makeMocks()
-			const mockAccessToken = await createMockAccessToken({expiresMilliseconds: 10 * (60 * 1000)})
-			const mockRefreshToken = await createMockRefreshToken({expiresMilliseconds: 10 * (60 * 1000)})
-			storage.getItem.mockImplementation((key: string) => {
+			const mockAccessToken = await createMockAccessToken({
+				expiresMilliseconds: tenMinutes
+			})
+			const mockRefreshToken = await createMockRefreshToken({
+				expiresMilliseconds: tenMinutes
+			})
+			storage.getItem = fn((key: string) => {
 				if (key === "refreshToken") return mockRefreshToken
 				else if (key === "accessToken") return mockAccessToken
 			})
 			const accessToken = await tokenStorage.passiveCheck()
-			expect(accessToken).toBe(mockAccessToken)
-		})
-
-		it("when access token is missing, use refresh token to get new access token and return it (and save it too)", async() => {
+			return accessToken === mockAccessToken
+		},
+		"use refresh token to get new access token": async() => {
 			const {tokenStorage, storage, authExchanger} = makeMocks()
-			const mockAccessToken = await createMockAccessToken({expiresMilliseconds: 10 * (60 * 1000)})
-			const mockRefreshToken = await createMockRefreshToken({expiresMilliseconds: 10 * (60 * 1000)})
-			authExchanger.authorize.mockImplementation(async() => mockAccessToken)
-			storage.getItem.mockImplementation((key: string) => {
+			const mockAccessToken = await createMockAccessToken({
+				expiresMilliseconds: tenMinutes
+			})
+			const mockRefreshToken = await createMockRefreshToken({
+				expiresMilliseconds: tenMinutes
+			})
+			authExchanger.authorize = fn(async() => mockAccessToken)
+			storage.getItem = fn((key: string) => {
 				if (key === "refreshToken") return mockRefreshToken
 				else if (key === "accessToken") return null
 			})
 			const accessToken = await tokenStorage.passiveCheck()
-			expect(authExchanger.authorize.mock.calls[0][0]).toEqual({refreshToken: mockRefreshToken})
-			expect(accessToken).toBe(mockAccessToken)
-			expect(storage.setItem).toHaveBeenCalled()
-		})
-
-		it("when both acccess token and refresh token are gone, return null", async() => {
+			return (
+				(authExchanger.authorize.mock.calls.length > 0)
+					&&
+				(authExchanger.authorize.mock.calls[0].args[0].refreshToken
+				 === mockRefreshToken)
+					&&
+				(accessToken === mockAccessToken)
+					&&
+				(storage.setItem.mock.calls.length > 0)
+			)
+		},
+		"return null when no tokens are available": async() => {
 			const {tokenStorage, storage} = makeMocks()
-			storage.getItem.mockImplementation((key: string) => {
+			storage.getItem = fn((key: string) => {
 				if (key === "refreshToken") return null
 				else if (key === "accessToken") return null
 			})
 			const accessToken = await tokenStorage.passiveCheck()
-			expect(accessToken).toBe(null)
-		})
-
-	})
-	describe("clearTokens()", () => {
-
-		it("tokens are no longer accessible", async() => {
+			return accessToken === null
+		},
+	},
+	"clearTokens()": {
+		"tokens are removed from storage": async() => {
 			const {tokenStorage, storage} = makeMocks()
 			await tokenStorage.clearTokens()
-			expect(storage.removeItem).toHaveBeenCalledTimes(2)
-		})
-
-	})
-})
+			return (
+				(storage.removeItem.mock.calls.length === 2)
+			)
+		},
+	},
+}
