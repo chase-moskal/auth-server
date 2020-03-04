@@ -4,7 +4,7 @@
 	"tokenStorage": {
 		"cors": {
 			"allowed": {
-				"pattern": "^http:\/\/demo:8\\d{3}$",
+				"pattern": "^http:\/\/(demo|localhost):8\\d{3}$",
 				"flags": "i"
 			},
 			"forbidden": null
@@ -13,7 +13,7 @@
 	"accountPopup": {
 		"cors": {
 			"allowed": {
-				"pattern": "^http:\/\/demo:8\\d{3}$",
+				"pattern": "^http:\/\/(demo|localhost):8\\d{3}$",
 				"flags": "i"
 			},
 			"forbidden": null
@@ -22,7 +22,7 @@
 	"authExchanger": {
 		"cors": {
 			"allowed": {
-				"pattern": "^http:\/\/demo:8\\d{3}$",
+				"pattern": "^http:\/\/(demo|localhost):8\\d{3}$",
 				"flags": "i"
 			},
 			"forbidden": null
@@ -31,7 +31,7 @@
 	"claimsDealer": {
 		"cors": {
 			"allowed": {
-				"pattern": "^http:\/\/demo:8\\d{3}$",
+				"pattern": "^http:\/\/(demo|localhost):8\\d{3}$",
 				"flags": "i"
 			},
 			"forbidden": null
@@ -43,7 +43,7 @@
 		"collectionName": "users"
 	},
 	"profileServerConnection": {
-		"authServerOrigin": "http://profile-server:8001"
+		"profileServerOrigin": "http://profile-server:8001"
 	},
 	"google": {
 		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com",

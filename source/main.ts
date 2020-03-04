@@ -55,11 +55,11 @@ export async function main() {
 
 	const templates = {
 		accountPopup: await getTemplate("account-popup.pug"),
-		tokenStorage: await getTemplate("token-storage.pug")
+		tokenStorage: await getTemplate("token-storage.pug"),
 	}
 
 	const profileMagistrate = await createProfileMagistrateClient({
-		authServerOrigin: config.profileServerConnection.authServerOrigin
+		profileServerOrigin: config.profileServerConnection.profileServerOrigin
 	})
 
 	const claimsDealer = createClaimsDealer({usersCollection})
@@ -132,6 +132,9 @@ export async function main() {
 	// run the koa server app
 	//
 
+	const host = "0.0.0.0"
+	const port = config.port
+
 	new Koa()
 
 		// account popup and token storage
@@ -147,7 +150,7 @@ export async function main() {
 		.use(mount("/api", apiKoa))
 
 		// start the server
-		.listen(config.port)
+		.listen({host, port})
 
 	console.log(`🌐 auth-server on ${config.port}`)
 }

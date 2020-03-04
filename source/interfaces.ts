@@ -45,7 +45,7 @@ export interface GoogleConfig {
 }
 
 export interface ProfileServerConnection {
-	authServerOrigin: string
+	profileServerOrigin: string
 }
 
 export interface UserRecord {
