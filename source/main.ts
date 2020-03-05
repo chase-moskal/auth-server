@@ -1,80 +1,49 @@
 
-// TODO cjs
-import mod from "module"
-const require = mod.createRequire(import.meta.url)
-import * as _pug from "pug"
-import * as _Koa from "koa"
-import * as _cors from "@koa/cors"
-import * as _mount from "koa-mount"
-import * as _serve from "koa-static"
-import * as _googleAuth from "google-auth-library"
-const pug: typeof _pug = require("pug") as typeof _pug
-const Koa: typeof _Koa = require("koa") as typeof _Koa
-const cors: typeof _cors = require("@koa/cors") as typeof _cors
-const mount: typeof _mount = require("koa-mount") as typeof _mount
-const serve: typeof _serve = require("koa-static") as typeof _serve
-const googleAuth: typeof _googleAuth =
-	require("google-auth-library") as typeof _googleAuth
+import Koa from "./commonjs/koa.js"
+import * as pug from "./commonjs/pug.js"
+import cors from "./commonjs/koa-cors.js"
+import mount from "./commonjs/koa-mount.js"
+import serve from "./commonjs/koa-static.js"
+import googleAuth from "./commonjs/google-auth-library.js"
 
 import {promises} from "fs"
 import {apiServer} from "renraku/dist/api-server.js"
-import {createProfileMagistrateClient}
-	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
 import {unpackCorsConfig}
 	from "authoritarian/dist/toolbox/unpack-cors-config.js"
-
-import {httpHandler} from "./modules/http-handler.js"
-import {createMongoCollection} from "./modules/create-mongo-collection.js"
-import {AccountPopupSettings, TokenStorageConfig}
-	from "./clientside/interfaces.js"
+import {createProfileMagistrateClient}
+	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
 
 import {Config, AuthApi} from "./interfaces.js"
-import {createClaimsDealer} from "./claims-dealer.js"
-import {createAuthExchanger} from "./auth-exchanger.js"
-import {createClaimsVanguard} from "./claims-vanguard.js"
+import {httpHandler} from "./toolbox/http-handler.js"
+import {connectMongo} from "./toolbox/connect-mongo.js"
+import {createAuthExchanger} from "./api/auth-exchanger.js"
+import {prepareUsersDatabase} from "./api/users-database.js"
+import {AccountPopupSettings, TokenStorageConfig}
+	from "./clientside/interfaces.js"
+import {ClaimsDealerTopic, ClaimsVanguardTopic}
+	from "authoritarian/dist/interfaces.js"
 
 const configPath = "config"
-
 const read = (path: string) => promises.readFile(path, "utf8")
-
 const getTemplate = async(filename: string) =>
 	pug.compile(await read(`source/clientside/templates/${filename}`))
 
 main().catch(error => console.error(error))
 
 export async function main() {
+
+	//
+	// loading config, templates, and preparing connections
+	//
+
 	const config: Config = JSON.parse(await read(`${configPath}/config.json`))
-
-	//
-	// initialization
-	//
-
 	const publicKey = await read(`${configPath}/auth-server.public.pem`)
 	const privateKey = await read(`${configPath}/auth-server.private.pem`)
-	const usersCollection = await createMongoCollection(config.usersDatabase)
 
 	const templates = {
 		accountPopup: await getTemplate("account-popup.pug"),
 		tokenStorage: await getTemplate("token-storage.pug"),
 	}
-
-	const profileMagistrate = await createProfileMagistrateClient({
-		profileServerOrigin: config.profileServerConnection.profileServerOrigin
-	})
-
-	const claimsDealer = createClaimsDealer({usersCollection})
-	const claimsVanguard = createClaimsVanguard({usersCollection})
-	const authExchanger = createAuthExchanger({
-		publicKey,
-		privateKey,
-		claimsDealer,
-		claimsVanguard,
-		profileMagistrate,
-		accessTokenExpiresMilliseconds: 20 * (60 * 1000), // twenty minutes
-		refreshTokenExpiresMilliseconds: 60 * (24 * 60 * 60 * 1000), // sixty days
-		googleClientId: config.google.clientId,
-		oAuth2Client: new googleAuth.OAuth2Client(config.google.clientId),
-	})
 
 	//
 	// static html frontend
@@ -108,6 +77,29 @@ export async function main() {
 	//
 	// json rpc api
 	//
+
+	const usersDatabase = prepareUsersDatabase(
+		await connectMongo(config.usersDatabase)
+	)
+
+	const profileMagistrate = await createProfileMagistrateClient(
+		config.profileServerConnection
+	)
+
+	const {getUser, createUser, setClaims} = usersDatabase
+	const claimsDealer: ClaimsDealerTopic = {getUser}
+	const claimsVanguard: ClaimsVanguardTopic = {createUser, setClaims}
+
+	const authExchanger = createAuthExchanger({
+		publicKey,
+		privateKey,
+		usersDatabase,
+		profileMagistrate,
+		accessTokenExpiresMilliseconds: 20 * (60 * 1000), // twenty minutes
+		refreshTokenExpiresMilliseconds: 60 * (24 * 60 * 60 * 1000), // sixty days
+		googleClientId: config.google.clientId,
+		oAuth2Client: new googleAuth.OAuth2Client(config.google.clientId),
+	})
 
 	const {koa: apiKoa} = await apiServer<AuthApi>({
 		logger: console,

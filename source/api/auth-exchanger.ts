@@ -1,30 +1,26 @@
 
-// TODO cjs
-import * as _googleAuth from "google-auth-library"
-
 import {tokenSign} from "redcrypto/dist/token-sign.js"
 import {tokenVerify} from "redcrypto/dist/token-verify.js"
+import {OAuth2Client} from "../commonjs/google-auth-library.js"
 import {
 	AuthTokens,
 	AccessToken,
 	RefreshToken,
 	AccessPayload,
 	RefreshPayload,
-	ClaimsDealerTopic,
 	AuthExchangerTopic,
-	ClaimsVanguardTopic,
 	ProfileMagistrateTopic,
 } from "authoritarian/dist/interfaces.js"
 
-import {generateName} from "./modules/generate-name.js"
-import {verifyGoogleIdToken} from "./modules/verify-google-id-token.js"
+import {UsersDatabase} from "../interfaces.js"
+import {generateName} from "../toolbox/generate-name.js"
+import {verifyGoogleIdToken} from "../toolbox/verify-google-id-token.js"
 
 export const createAuthExchanger = ({
 	publicKey,
 	privateKey,
 	oAuth2Client,
-	claimsDealer,
-	claimsVanguard,
+	usersDatabase,
 	googleClientId,
 	profileMagistrate,
 	accessTokenExpiresMilliseconds,
@@ -33,11 +29,10 @@ export const createAuthExchanger = ({
 	publicKey: string
 	privateKey: string
 	googleClientId: string
-	oAuth2Client: _googleAuth.OAuth2Client
+	oAuth2Client: OAuth2Client
+	usersDatabase: UsersDatabase
 	accessTokenExpiresMilliseconds: number
 	refreshTokenExpiresMilliseconds: number
-	claimsDealer: ClaimsDealerTopic
-	claimsVanguard: ClaimsVanguardTopic
 	profileMagistrate: ProfileMagistrateTopic
 }): AuthExchangerTopic => ({
 
@@ -57,7 +52,7 @@ export const createAuthExchanger = ({
 
 			console.log(" - googleId", googleId)
 
-			const user = await claimsVanguard.createUser({googleId})
+			const user = await usersDatabase.createUser({googleId})
 			const {userId} = user
 
 			const refreshToken = await tokenSign<RefreshPayload>({
@@ -102,7 +97,7 @@ export const createAuthExchanger = ({
 	async authorize({refreshToken}: {refreshToken: RefreshToken}): Promise<AccessToken> {
 		const data = await tokenVerify<RefreshPayload>({token: refreshToken, publicKey})
 		const {userId} = data.payload
-		const user = await claimsDealer.getUser({userId})
+		const user = await usersDatabase.getUser({userId})
 		const accessToken = await tokenSign<AccessPayload>({
 			privateKey,
 			payload: {user},

@@ -1,5 +1,4 @@
 
-// TODO cjs
 import mod from "module"
 const require = mod.createRequire(import.meta.url)
 import * as _generatorModule from "unique-names-generator"
@@ -13,6 +12,9 @@ const {
 	uniqueNamesGenerator,
 } = generatorModule
 
-export function generateName() {
-	return uniqueNamesGenerator({dictionaries: [adjectives, colors, animals]})
+export {
+	colors,
+	animals,
+	adjectives,
+	uniqueNamesGenerator,
 }

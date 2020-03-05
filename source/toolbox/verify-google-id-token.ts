@@ -1,6 +1,5 @@
 
-// TODO cjs
-import * as _googleAuth from "google-auth-library"
+import {OAuth2Client} from "../commonjs/google-auth-library.js"
 
 export async function verifyGoogleIdToken({
 	googleToken,
@@ -9,7 +8,7 @@ export async function verifyGoogleIdToken({
 }: {
 	googleToken: string
 	googleClientId: string
-	oAuth2Client: _googleAuth.OAuth2Client
+	oAuth2Client: OAuth2Client
 }) {
 
 	const ticket = await oAuth2Client.verifyIdToken({

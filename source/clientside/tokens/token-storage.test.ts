@@ -1,13 +1,12 @@
 
 import {Suite} from "cynic"
 
-import {TokenStorage} from "./token-storage.js"
 import {
 	createMockAccessToken,
 	createMockRefreshToken,
-} from "../../mocks.js"
-
-import {fn} from "../../testing.js"
+} from "../../tests/mocks.js"
+import {fn} from "../../tests/testing.js"
+import {TokenStorage} from "./token-storage.js"
 
 const makeMocks = () => {
 	const storage = {
@@ -32,7 +31,10 @@ export default <Suite>{
 	"writeTokens()": {
 		"stores tokens in storage": async() => {
 			const {tokenStorage, storage} = makeMocks()
-			await tokenStorage.writeTokens({refreshToken: "r123", accessToken: "a123"})
+			await tokenStorage.writeTokens({
+				accessToken: "a123",
+				refreshToken: "r123",
+			})
 			const verifyCall = (k: string, v: any) => !!storage.setItem.mock.calls
 				.find(({args}) => {
 					const [key, value] = args

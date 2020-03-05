@@ -1,8 +1,7 @@
 
-// TODO cjs
-import * as mongodb from "mongodb"
+import {ObjectID} from "./commonjs/mongodb.js"
 
-import {Claims, AuthApi, CorsConfig}
+import {User, Claims, AuthApi, CorsConfig}
 	from "authoritarian/dist/interfaces.js"
 
 import {AccountPopupConfig, TokenStorageConfig}
@@ -20,6 +19,12 @@ export interface Config {
 	usersDatabase: MongoDatabaseConfig
 	authExchanger: AuthExchangerConfig
 	profileServerConnection: ProfileServerConnection
+}
+
+export interface UsersDatabase {
+	getUser(o: {userId: string}): Promise<User>
+	createUser(o: {googleId: string}): Promise<User>
+	setClaims(o: {userId: string, claims?: Claims}): Promise<User>
 }
 
 export interface ClaimsDealerConfig {
@@ -49,7 +54,7 @@ export interface ProfileServerConnection {
 }
 
 export interface UserRecord {
-	_id?: mongodb.ObjectId
+	_id?: ObjectID
 	claims: Claims
 	googleId: string
 }

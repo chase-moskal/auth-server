@@ -3,11 +3,32 @@ import {tokenSign} from "redcrypto/dist/token-sign.js"
 import {
 	AccessPayload,
 	RefreshPayload,
-	ClaimsVanguardTopic,
-	ProfileMagistrateTopic,
 } from "authoritarian/dist/interfaces.js"
 
-import {generateName} from "./modules/generate-name.js"
+export async function createMockAccessToken({expiresMilliseconds}: {
+	expiresMilliseconds: number
+}) {
+	return tokenSign<AccessPayload>({
+		privateKey,
+		expiresMilliseconds,
+		payload: {
+			user: {
+				userId: "123",
+				claims: {premium: true},
+			}
+		},
+	})
+}
+
+export async function createMockRefreshToken({expiresMilliseconds}: {
+	expiresMilliseconds: number
+}) {
+	return tokenSign<RefreshPayload>({
+		privateKey,
+		expiresMilliseconds,
+		payload: {userId: "123"},
+	})
+}
 
 export const privateKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIJKQIBAAKCAgEAnHbuNcNWKAldKtOS1j6LUsWyeXGI6Nm3J5kd8tVA36nbCw5k
@@ -77,62 +98,3 @@ ddDeqEECom2wQlaTswDUFlsvcb3gDjsHmY185yJrzkao3dLxmGRdth1aAL2yEZ7w
 Fpinp9HkYVWHX/SGQKdP6+UCAwEAAQ==
 -----END PUBLIC KEY-----
 `
-
-export async function createMockAccessToken({expiresMilliseconds}: {
-	expiresMilliseconds: number
-}) {
-	return tokenSign<AccessPayload>({
-		privateKey,
-		expiresMilliseconds,
-		payload: {
-			user: {
-				userId: "123",
-				claims: {premium: true},
-			}
-		},
-	})
-}
-
-export async function createMockRefreshToken({expiresMilliseconds}: {
-	expiresMilliseconds: number
-}) {
-	return tokenSign<RefreshPayload>({
-		privateKey,
-		expiresMilliseconds,
-		payload: {userId: "123"},
-	})
-}
-
-export class MockClaimsVanguard implements ClaimsVanguardTopic {
-	async createUser({googleId}) {
-		return {
-			userId: "fake-user-id",
-			claims: {},
-		}
-	}
-	async getUser({userId}) {
-		return {
-			userId: userId,
-			claims: {},
-		}
-	}
-	async setClaims({userId, claims}) {
-		return {
-			userId,
-			claims,
-		}
-	}
-}
-
-export class MockProfileMagistrate implements ProfileMagistrateTopic {
-	async getProfile({userId}) {
-		return {
-			userId,
-			avatar: "fake-picture",
-			nickname: generateName(),
-		}
-	}
-	async setProfile({accessToken, profile}) {
-		return null
-	}
-}

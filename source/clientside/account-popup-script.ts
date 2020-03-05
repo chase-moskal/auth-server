@@ -4,7 +4,7 @@ import {unpackCorsConfig}
 import {setupPopupMessaging}
 	from "authoritarian/dist/account-popup/setup-popup-messaging.js"
 
-import {prepareAuth} from "./services/prepare-auth.js"
+import {prepareAuth} from "./auth/prepare-auth.js"
 import {AccountPopupSettings} from "./interfaces.js"
 
 declare global {

@@ -7,8 +7,7 @@ import {unpackCorsConfig}
 	from "authoritarian/dist/toolbox/unpack-cors-config.js"
 
 import {TokenStorageConfig} from "./interfaces.js"
-
-import {TokenStorage} from "./services/token-storage.js"
+import {TokenStorage} from "./tokens/token-storage.js"
 
 main()
 	.then(() => console.log("🎟️ token script"))
