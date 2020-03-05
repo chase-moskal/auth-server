@@ -37,29 +37,30 @@ export async function main() {
 	//
 
 	const config: Config = JSON.parse(await read(`${configPath}/config.json`))
+	const host = "0.0.0.0"
+	const port = config.port
 	const publicKey = await read(`${configPath}/auth-server.public.pem`)
 	const privateKey = await read(`${configPath}/auth-server.private.pem`)
-
 	const templates = {
 		accountPopup: await getTemplate("account-popup.pug"),
 		tokenStorage: await getTemplate("token-storage.pug"),
 	}
 
 	//
-	// static html frontend
+	// static html clientside
 	//
 
 	const htmlKoa = new Koa()
 		.use(cors())
 
-		// token storage
+		// token storage is a service in an iframe for cross-domain storage
 		.use(httpHandler("get", "/token-storage", async() => {
 			console.log("/token-storage")
 			const settings: TokenStorageConfig = config.tokenStorage
 			return templates.tokenStorage({settings})
 		}))
 
-		// account popup
+		// account popup is a popup to facilitate oauth routines
 		.use(httpHandler("get", "/account-popup", async() => {
 			console.log("/account-popup")
 			const {clientId, redirectUri} = config.google
@@ -71,25 +72,23 @@ export async function main() {
 			return templates.accountPopup({settings})
 		}))
 
-		// static clientside content
+		// serving the static clientside files
 		.use(serve("dist/clientside"))
 
 	//
 	// json rpc api
 	//
 
-	const usersDatabase = prepareUsersDatabase(
-		await connectMongo(config.usersDatabase)
-	)
-
 	const profileMagistrate = await createProfileMagistrateClient(
 		config.profileServerConnection
 	)
-
+	const usersDatabase = prepareUsersDatabase(
+		await connectMongo(config.usersDatabase)
+	)
 	const {getUser, createUser, setClaims} = usersDatabase
+
 	const claimsDealer: ClaimsDealerTopic = {getUser}
 	const claimsVanguard: ClaimsVanguardTopic = {createUser, setClaims}
-
 	const authExchanger = createAuthExchanger({
 		publicKey,
 		privateKey,
@@ -121,11 +120,8 @@ export async function main() {
 	})
 
 	//
-	// run the koa server app
+	// mount up the koa parts and run the server
 	//
-
-	const host = "0.0.0.0"
-	const port = config.port
 
 	new Koa()
 
