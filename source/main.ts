@@ -55,14 +55,14 @@ export async function main() {
 
 		// token storage is a service in an iframe for cross-domain storage
 		.use(httpHandler("get", "/token-storage", async() => {
-			console.log("/token-storage")
+			console.log(`/token-storage ${Date.now()}`)
 			const settings: TokenStorageConfig = config.tokenStorage
 			return templates.tokenStorage({settings})
 		}))
 
 		// account popup is a popup to facilitate oauth routines
 		.use(httpHandler("get", "/account-popup", async() => {
-			console.log("/account-popup")
+			console.log(`/account-popup ${Date.now()}`)
 			const {clientId, redirectUri} = config.google
 			const settings: AccountPopupSettings = {
 				...config.accountPopup,
@@ -140,5 +140,5 @@ export async function main() {
 		// start the server
 		.listen({host, port})
 
-	console.log(`🌐 auth-server on ${config.port}`)
+	console.log(`🌐 auth-server on ${port}`)
 }
