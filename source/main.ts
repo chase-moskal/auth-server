@@ -4,6 +4,7 @@ import * as pug from "./commonjs/pug.js"
 import cors from "./commonjs/koa-cors.js"
 import mount from "./commonjs/koa-mount.js"
 import serve from "./commonjs/koa-static.js"
+import logger from "./commonjs/koa-logger.js"
 import googleAuth from "./commonjs/google-auth-library.js"
 
 import {promises} from "fs"
@@ -124,6 +125,7 @@ export async function main() {
 	//
 
 	new Koa()
+		.use(logger())
 
 		// account popup and token storage
 		.use(mount("/html", htmlKoa))
