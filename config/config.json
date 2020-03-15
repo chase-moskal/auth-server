@@ -1,10 +1,30 @@
 {
 	"port": 8000,
 	"debug": true,
+	"usersDatabase": {
+		"uri": "mongodb+srv://admin:admin@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
+		"dbName": "authServer",
+		"collectionName": "users"
+	},
+	"google": {
+		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com"
+	},
+	"profileServerConnection": {
+		"profileServerOrigin": "http://profile.workdev.chasemoskal.com:8001"
+	},
+	"authExchanger": {
+		"cors": {
+			"allowed": {
+				"pattern": "^https?://(.*)chasemoskal.com(|:8\\d{3})$",
+				"flags": "i"
+			},
+			"forbidden": null
+		}
+	},
 	"tokenStorage": {
 		"cors": {
 			"allowed": {
-				"pattern": "^http:\/\/(demo|localhost):8\\d{3}$",
+				"pattern": "^https?://(.*)chasemoskal.com(|:8\\d{3})$",
 				"flags": "i"
 			},
 			"forbidden": null
@@ -13,16 +33,7 @@
 	"accountPopup": {
 		"cors": {
 			"allowed": {
-				"pattern": "^http:\/\/(demo|localhost):8\\d{3}$",
-				"flags": "i"
-			},
-			"forbidden": null
-		}
-	},
-	"authExchanger": {
-		"cors": {
-			"allowed": {
-				"pattern": "^http:\/\/(demo|localhost):8\\d{3}$",
+				"pattern": "^https?://(.*)chasemoskal.com(|:8\\d{3})$",
 				"flags": "i"
 			},
 			"forbidden": null
@@ -31,25 +42,10 @@
 	"claimsDealer": {
 		"cors": {
 			"allowed": {
-				"pattern": "^http:\/\/(demo|localhost):8\\d{3}$",
+				"pattern": "^https?://(.*)chasemoskal.com(|:8\\d{3})$",
 				"flags": "i"
 			},
 			"forbidden": null
 		}
-	},
-	"usersDatabase": {
-		"uri": "mongodb+srv://admin:admin@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
-		"dbName": "authServer",
-		"collectionName": "users"
-	},
-	"profileServerConnection": {
-		"profileServerOrigin": "http://profile-server:8001"
-	},
-	"google": {
-		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com",
-		"clientSecret": "ZbQ_ADbgMca4YJ5KWcR0FNLA",
-		"callbackUrl": "",
-		"scope": "profile email",
-		"redirectUri": "http://demo:8000/html/account-popup"
 	}
 }

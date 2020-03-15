@@ -14,13 +14,13 @@ export class GoogleAuthClient implements GoogleAuthClientInterface {
 	}
 
 	async initGoogleAuth(): Promise<void> {
-		const {clientId, redirectUri} = this._googleAuthDetails
+		const {clientId} = this._googleAuthDetails
 		this._googleAuth = await new Promise<GoogleAuthFixed>((resolve, reject) => {
 			gapi.load("auth2", () => {
 				const googleAuth = gapi.auth2.init({
 					ux_mode: "redirect",
 					client_id: clientId,
-					redirect_uri: redirectUri
+					redirect_uri: location.href
 				})
 				googleAuth.then(
 					() => resolve(fixGoogleAuth(googleAuth)),

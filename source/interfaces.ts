@@ -42,11 +42,7 @@ export interface MongoDatabaseConfig {
 }
 
 export interface GoogleConfig {
-	scope: string
 	clientId: string
-	callbackUrl: string
-	redirectUri: string
-	clientSecret: string
 }
 
 export interface ProfileServerConnection {

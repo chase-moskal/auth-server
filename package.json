@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"name": "auth-server",
-	"version": "0.0.0-dev.12",
+	"version": "0.0.0-dev.13",
 	"description": "example standalone auth server",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
@@ -41,7 +41,7 @@
 		"mongodb": "^3.5.5",
 		"pug": "^2.0.4",
 		"redcrypto": "0.0.0-dev.4",
-		"renraku": "0.0.0-dev.24",
+		"renraku": "0.0.0-dev.25",
 		"unique-names-generator": "^4.2.0"
 	},
 	"devDependencies": {

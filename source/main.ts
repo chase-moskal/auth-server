@@ -64,11 +64,11 @@ export async function main() {
 		// account popup is a popup to facilitate oauth routines
 		.use(httpHandler("get", "/account-popup", async() => {
 			console.log(`/account-popup ${Date.now()}`)
-			const {clientId, redirectUri} = config.google
+			const {clientId} = config.google
 			const settings: AccountPopupSettings = {
 				...config.accountPopup,
 				debug: config.debug,
-				googleAuthDetails: {clientId, redirectUri}
+				googleAuthDetails: {clientId}
 			}
 			return templates.accountPopup({settings})
 		}))
