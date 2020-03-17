@@ -12,13 +12,13 @@ export {AuthApi}
 export interface Config {
 	port: number
 	debug: boolean
+	cors: CorsConfig
 	google: GoogleConfig
-	tokenStorage: TokenStorageConfig
-	accountPopup: AccountPopupConfig
-	claimsDealer: ClaimsDealerConfig
-	usersDatabase: MongoDatabaseConfig
-	authExchanger: AuthExchangerConfig
-	profileServerConnection: ProfileServerConnection
+	profileServerOrigin: string
+	mongo: {
+		link: string
+		database: string
+	}
 }
 
 export interface UsersDatabase {
@@ -36,17 +36,13 @@ export interface AuthExchangerConfig {
 }
 
 export interface MongoDatabaseConfig {
-	uri: string
-	dbName: string
-	collectionName: string
+	link: string
+	database: string
+	collection: string
 }
 
 export interface GoogleConfig {
 	clientId: string
-}
-
-export interface ProfileServerConnection {
-	profileServerOrigin: string
 }
 
 export interface UserRecord {

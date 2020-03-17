@@ -1,4 +1,10 @@
 
+const paths = {
+	config: "config/config.yaml",
+	publicKey: "config/auth-server.public.pem",
+	privateKey: "config/auth-server.private.pem",
+}
+
 import Koa from "./commonjs/koa.js"
 import * as pug from "./commonjs/pug.js"
 import cors from "./commonjs/koa-cors.js"
@@ -7,48 +13,62 @@ import serve from "./commonjs/koa-static.js"
 import logger from "./commonjs/koa-logger.js"
 import googleAuth from "./commonjs/google-auth-library.js"
 
-import {promises} from "fs"
 import {apiServer} from "renraku/dist/api-server.js"
 import {unpackCorsConfig}
 	from "authoritarian/dist/toolbox/unpack-cors-config.js"
 import {createProfileMagistrateClient}
 	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
+import {ClaimsDealerTopic, ClaimsVanguardTopic}
+	from "authoritarian/dist/interfaces.js"
 
 import {Config, AuthApi} from "./interfaces.js"
+import {read, readYaml} from "./toolbox/reading.js"
 import {httpHandler} from "./toolbox/http-handler.js"
 import {connectMongo} from "./toolbox/connect-mongo.js"
 import {createAuthExchanger} from "./api/auth-exchanger.js"
 import {prepareUsersDatabase} from "./api/users-database.js"
 import {AccountPopupSettings, TokenStorageConfig}
 	from "./clientside/interfaces.js"
-import {ClaimsDealerTopic, ClaimsVanguardTopic}
-	from "authoritarian/dist/interfaces.js"
 
-const configPath = "config"
-const read = (path: string) => promises.readFile(path, "utf8")
 const getTemplate = async(filename: string) =>
 	pug.compile(await read(`source/clientside/templates/${filename}`))
 
-main().catch(error => console.error(error))
+~async function main() {
+	const config: Config = (await readYaml(paths.config)).authServer
+	const publicKey = await read(paths.publicKey)
+	const privateKey = await read(paths.privateKey)
 
-export async function main() {
-
-	//
-	// loading config, templates, and preparing connections
-	//
-
-	const config: Config = JSON.parse(await read(`${configPath}/config.json`))
-	const host = "0.0.0.0"
-	const port = config.port
-	const publicKey = await read(`${configPath}/auth-server.public.pem`)
-	const privateKey = await read(`${configPath}/auth-server.private.pem`)
 	const templates = {
 		accountPopup: await getTemplate("account-popup.pug"),
 		tokenStorage: await getTemplate("token-storage.pug"),
 	}
 
+	const profileMagistrate = await createProfileMagistrateClient({
+		profileServerOrigin: config.profileServerOrigin
+	})
+
+	const usersDatabase = prepareUsersDatabase(await connectMongo({
+		...config.mongo,
+		collection: "users",
+	}))
+
+	const {getUser, createUser, setClaims} = usersDatabase
+	const claimsDealer: ClaimsDealerTopic = {getUser}
+	const claimsVanguard: ClaimsVanguardTopic = {createUser, setClaims}
+	
+	const authExchanger = createAuthExchanger({
+		publicKey,
+		privateKey,
+		usersDatabase,
+		profileMagistrate,
+		accessTokenExpiresMilliseconds: 20 * (60 * 1000), // twenty minutes
+		refreshTokenExpiresMilliseconds: 60 * (24 * 60 * 60 * 1000), // sixty days
+		googleClientId: config.google.clientId,
+		oAuth2Client: new googleAuth.OAuth2Client(config.google.clientId),
+	})
+
 	//
-	// static html clientside
+	// html clientside
 	//
 
 	const htmlKoa = new Koa()
@@ -57,7 +77,7 @@ export async function main() {
 		// token storage is a service in an iframe for cross-domain storage
 		.use(httpHandler("get", "/token-storage", async() => {
 			console.log(`/token-storage ${Date.now()}`)
-			const settings: TokenStorageConfig = config.tokenStorage
+			const settings: TokenStorageConfig = {cors: config.cors}
 			return templates.tokenStorage({settings})
 		}))
 
@@ -66,7 +86,7 @@ export async function main() {
 			console.log(`/account-popup ${Date.now()}`)
 			const {clientId} = config.google
 			const settings: AccountPopupSettings = {
-				...config.accountPopup,
+				cors: config.cors,
 				debug: config.debug,
 				googleAuthDetails: {clientId}
 			}
@@ -80,43 +100,22 @@ export async function main() {
 	// json rpc api
 	//
 
-	const profileMagistrate = await createProfileMagistrateClient(
-		config.profileServerConnection
-	)
-	const usersDatabase = prepareUsersDatabase(
-		await connectMongo(config.usersDatabase)
-	)
-	const {getUser, createUser, setClaims} = usersDatabase
-
-	const claimsDealer: ClaimsDealerTopic = {getUser}
-	const claimsVanguard: ClaimsVanguardTopic = {createUser, setClaims}
-	const authExchanger = createAuthExchanger({
-		publicKey,
-		privateKey,
-		usersDatabase,
-		profileMagistrate,
-		accessTokenExpiresMilliseconds: 20 * (60 * 1000), // twenty minutes
-		refreshTokenExpiresMilliseconds: 60 * (24 * 60 * 60 * 1000), // sixty days
-		googleClientId: config.google.clientId,
-		oAuth2Client: new googleAuth.OAuth2Client(config.google.clientId),
-	})
-
 	const {koa: apiKoa} = await apiServer<AuthApi>({
 		logger: console,
 		debug: config.debug,
 		exposures: {
-			claimsDealer: {
-				exposed: claimsDealer,
-				cors: unpackCorsConfig(config.claimsDealer.cors)
+			authExchanger: {
+				exposed: authExchanger,
+				cors: unpackCorsConfig(config.cors)
 			},
 			claimsVanguard: {
 				exposed: claimsVanguard,
 				whitelist: {}
 			},
-			authExchanger: {
-				exposed: authExchanger,
-				cors: unpackCorsConfig(config.authExchanger.cors)
-			}
+			claimsDealer: {
+				exposed: claimsDealer,
+				cors: unpackCorsConfig(config.cors)
+			},
 		}
 	})
 
@@ -127,20 +126,20 @@ export async function main() {
 	new Koa()
 		.use(logger())
 
-		// account popup and token storage
+		// mount html for account popup and token storage
 		.use(mount("/html", htmlKoa))
 
-		// serving up the node_modules for local dev
+		// serve node_modules for local dev
 		.use(mount("/node_modules", new Koa()
 			.use(cors())
 			.use(serve("node_modules"))
 		))
 
-		// renraku json rpc api
+		// auth api
 		.use(mount("/api", apiKoa))
 
 		// start the server
-		.listen({host, port})
+		.listen({host: "0.0.0.0", port: config.port})
 
-	console.log(`🌐 auth-server on ${port}`)
-}
+	console.log(`🌐 auth-server on ${config.port}`)
+}()
