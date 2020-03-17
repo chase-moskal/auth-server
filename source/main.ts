@@ -34,7 +34,8 @@ const getTemplate = async(filename: string) =>
 	pug.compile(await read(`source/clientside/templates/${filename}`))
 
 ~async function main() {
-	const config: Config = (await readYaml(paths.config)).authServer
+	const config: Config = await readYaml(paths.config)
+	const {port} = config.authServer
 	const publicKey = await read(paths.publicKey)
 	const privateKey = await read(paths.privateKey)
 
@@ -44,7 +45,7 @@ const getTemplate = async(filename: string) =>
 	}
 
 	const profileMagistrate = await createProfileMagistrateClient({
-		profileServerOrigin: config.profileServerOrigin
+		profileServerOrigin: config.authServer.profileServerOrigin
 	})
 
 	const usersDatabase = prepareUsersDatabase(await connectMongo({
@@ -63,8 +64,8 @@ const getTemplate = async(filename: string) =>
 		profileMagistrate,
 		accessTokenExpiresMilliseconds: 20 * (60 * 1000), // twenty minutes
 		refreshTokenExpiresMilliseconds: 60 * (24 * 60 * 60 * 1000), // sixty days
-		googleClientId: config.google.clientId,
-		oAuth2Client: new googleAuth.OAuth2Client(config.google.clientId),
+		googleClientId: config.authServer.googleClientId,
+		oAuth2Client: new googleAuth.OAuth2Client(config.authServer.googleClientId),
 	})
 
 	//
@@ -84,11 +85,10 @@ const getTemplate = async(filename: string) =>
 		// account popup is a popup to facilitate oauth routines
 		.use(httpHandler("get", "/account-popup", async() => {
 			console.log(`/account-popup ${Date.now()}`)
-			const {clientId} = config.google
 			const settings: AccountPopupSettings = {
 				cors: config.cors,
-				debug: config.debug,
-				googleAuthDetails: {clientId}
+				debug: config.authServer.debug,
+				googleAuthDetails: {clientId: config.authServer.googleClientId}
 			}
 			return templates.accountPopup({settings})
 		}))
@@ -102,7 +102,7 @@ const getTemplate = async(filename: string) =>
 
 	const {koa: apiKoa} = await apiServer<AuthApi>({
 		logger: console,
-		debug: config.debug,
+		debug: config.authServer.debug,
 		exposures: {
 			authExchanger: {
 				exposed: authExchanger,
@@ -139,7 +139,7 @@ const getTemplate = async(filename: string) =>
 		.use(mount("/api", apiKoa))
 
 		// start the server
-		.listen({host: "0.0.0.0", port: config.port})
+		.listen({host: "0.0.0.0", port})
 
-	console.log(`🌐 auth-server on ${config.port}`)
+	console.log(`🌐 auth-server on ${port}`)
 }()

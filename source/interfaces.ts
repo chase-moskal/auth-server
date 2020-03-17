@@ -4,17 +4,16 @@ import {ObjectID} from "./commonjs/mongodb.js"
 import {User, Claims, AuthApi, CorsConfig}
 	from "authoritarian/dist/interfaces.js"
 
-import {AccountPopupConfig, TokenStorageConfig}
-	from "./clientside/interfaces.js"
-
 export {AuthApi}
 
 export interface Config {
-	port: number
-	debug: boolean
+	authServer: {
+		port: number
+		debug: boolean
+		profileServerOrigin: string
+		googleClientId: string
+	}
 	cors: CorsConfig
-	google: GoogleConfig
-	profileServerOrigin: string
 	mongo: {
 		link: string
 		database: string
@@ -39,10 +38,6 @@ export interface MongoDatabaseConfig {
 	link: string
 	database: string
 	collection: string
-}
-
-export interface GoogleConfig {
-	clientId: string
 }
 
 export interface UserRecord {
