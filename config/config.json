@@ -2,8 +2,8 @@
 	"port": 8000,
 	"debug": true,
 	"usersDatabase": {
-		"uri": "mongodb+srv://admin:admin@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
-		"dbName": "authServer",
+		"uri": "mongodb+srv://developer:eAQiCvYa2nQLKVPZ@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
+		"dbName": "metaldev",
 		"collectionName": "users"
 	},
 	"google": {
