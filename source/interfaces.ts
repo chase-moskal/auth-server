@@ -6,20 +6,6 @@ import {User, Claims, AuthApi, CorsConfig}
 
 export {AuthApi}
 
-export interface Config {
-	authServer: {
-		port: number
-		debug: boolean
-		profileServerOrigin: string
-		googleClientId: string
-	}
-	cors: CorsConfig
-	mongo: {
-		link: string
-		database: string
-	}
-}
-
 export interface UsersDatabase {
 	getUser(o: {userId: string}): Promise<User>
 	createUser(o: {googleId: string}): Promise<User>

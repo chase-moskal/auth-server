@@ -18,10 +18,10 @@ import {unpackCorsConfig}
 	from "authoritarian/dist/toolbox/unpack-cors-config.js"
 import {createProfileMagistrateClient}
 	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
-import {ClaimsDealerTopic, ClaimsVanguardTopic}
+import {AuthServerConfig, ClaimsDealerTopic, ClaimsVanguardTopic}
 	from "authoritarian/dist/interfaces.js"
 
-import {Config, AuthApi} from "./interfaces.js"
+import {AuthApi} from "./interfaces.js"
 import {read, readYaml} from "./toolbox/reading.js"
 import {httpHandler} from "./toolbox/http-handler.js"
 import {connectMongo} from "./toolbox/connect-mongo.js"
@@ -34,7 +34,7 @@ const getTemplate = async(filename: string) =>
 	pug.compile(await read(`source/clientside/templates/${filename}`))
 
 ~async function main() {
-	const config: Config = await readYaml(paths.config)
+	const config: AuthServerConfig = await readYaml(paths.config)
 	const {port} = config.authServer
 	const publicKey = await read(paths.publicKey)
 	const privateKey = await read(paths.privateKey)
