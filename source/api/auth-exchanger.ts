@@ -75,6 +75,7 @@ export const createAuthExchanger = ({
 						profile: {
 							userId,
 							avatar,
+							adminMode: false,
 							nickname: generateName(),
 						}
 					})
