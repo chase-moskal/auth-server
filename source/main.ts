@@ -1,76 +1,84 @@
 
-const paths = {
-	config: "config/config.yaml",
-	publicKey: "config/auth-server.public.pem",
-	privateKey: "config/auth-server.private.pem",
-}
-
 import Koa from "./commonjs/koa.js"
 import * as pug from "./commonjs/pug.js"
 import cors from "./commonjs/koa-cors.js"
 import mount from "./commonjs/koa-mount.js"
 import serve from "./commonjs/koa-static.js"
 import logger from "./commonjs/koa-logger.js"
-import googleAuth from "./commonjs/google-auth-library.js"
 
 import {apiServer} from "renraku/dist/api-server.js"
-import {unpackCorsConfig}
-	from "authoritarian/dist/toolbox/unpack-cors-config.js"
-import {createProfileMagistrateClient}
-	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
-import {AuthServerConfig, ClaimsDealerTopic, ClaimsVanguardTopic}
-	from "authoritarian/dist/interfaces.js"
 
-import {AuthApi} from "./interfaces.js"
-import {read, readYaml} from "./toolbox/reading.js"
-import {httpHandler} from "./toolbox/http-handler.js"
-import {connectMongo} from "./toolbox/connect-mongo.js"
-import {createAuthExchanger} from "./api/auth-exchanger.js"
-import {prepareUsersDatabase} from "./api/users-database.js"
-import {AccountPopupSettings, TokenStorageConfig}
-	from "./clientside/interfaces.js"
+import {AuthApi} from "authoritarian/dist/interfaces.js"
+import {AuthServerConfig} from "authoritarian/dist/interfaces.js"
+import {read, readYaml} from "authoritarian/dist/toolbox/reading.js"
+import {httpHandler} from "authoritarian/dist/toolbox/http-handler.js"
+import {connectMongo} from "authoritarian/dist/toolbox/connect-mongo.js"
+import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js"
+import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
+import {makeSignToken} from "authoritarian/dist/toolbox/tokens/make-sign-token.js"
+import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
+import {makeVerifyToken} from "authoritarian/dist/toolbox/tokens/make-verify-token.js"
+import {mongoUserDatalayer} from "authoritarian/dist/business/auth-api/mongo-user-datalayer.js"
+import {makeVerifyGoogleToken} from "authoritarian/dist/business/auth-api/make-verify-google-token.js"
+import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
+
+import {generateName} from "./toolbox/generate-name.js"
+import {AccountPopupSettings, TokenStorageConfig} from "./clientside/interfaces.js"
+
+const paths = {
+	config: "config/config.yaml",
+	publicKey: "config/auth-server.public.pem",
+	privateKey: "config/auth-server.private.pem",
+}
 
 const getTemplate = async(filename: string) =>
 	pug.compile(await read(`source/clientside/templates/${filename}`))
 
 ~async function main() {
+
+	// config, token keys, and database
 	const config: AuthServerConfig = await readYaml(paths.config)
 	const {port} = config.authServer
 	const publicKey = await read(paths.publicKey)
 	const privateKey = await read(paths.privateKey)
+	const usersCollection = await connectMongo(config.mongo, "users")
 
-	const templates = {
-		accountPopup: await getTemplate("account-popup.pug"),
-		tokenStorage: await getTemplate("token-storage.pug"),
-	}
-
-	const profileMagistrate = await createProfileMagistrateClient({
+	// profile magistrate - renraku client connection
+	const profileMagistrate = await makeProfileMagistrateClient({
 		profileServerOrigin: config.authServer.profileServerOrigin
 	})
 
-	const usersDatabase = prepareUsersDatabase(await connectMongo({
-		...config.mongo,
-		collection: "users",
-	}))
+	// generate auth-vanguard and the lesser auth-dealer
+	const userDatalayer = mongoUserDatalayer(usersCollection)
+	const {authVanguard, authDealer} = makeAuthVanguard({userDatalayer})
 
-	const {getUser, createUser, setClaims} = usersDatabase
-	const claimsDealer: ClaimsDealerTopic = {getUser}
-	const claimsVanguard: ClaimsVanguardTopic = {createUser, setClaims}
-	
-	const authExchanger = createAuthExchanger({
-		publicKey,
-		privateKey,
-		usersDatabase,
+	// prepare token signers and verifiers
+	const signToken = makeSignToken(privateKey)
+	const verifyToken = makeVerifyToken(publicKey)
+	const verifyGoogleToken = makeVerifyGoogleToken(
+		config.authServer.googleClientId
+	)
+
+	// create the auth exchanger
+	const authExchanger = makeAuthExchanger({
+		signToken,
+		verifyToken,
+		authVanguard,
 		profileMagistrate,
+		verifyGoogleToken,
+		generateRandomNickname: () => generateName(),
 		accessTokenExpiresMilliseconds: 20 * (60 * 1000), // twenty minutes
 		refreshTokenExpiresMilliseconds: 60 * (24 * 60 * 60 * 1000), // sixty days
-		googleClientId: config.authServer.googleClientId,
-		oAuth2Client: new googleAuth.OAuth2Client(config.authServer.googleClientId),
 	})
 
 	//
 	// html clientside
 	//
+
+	const templates = {
+		accountPopup: await getTemplate("account-popup.pug"),
+		tokenStorage: await getTemplate("token-storage.pug"),
+	}
 
 	const htmlKoa = new Koa()
 		.use(cors())
@@ -108,12 +116,12 @@ const getTemplate = async(filename: string) =>
 				exposed: authExchanger,
 				cors: unpackCorsConfig(config.cors)
 			},
-			claimsVanguard: {
-				exposed: claimsVanguard,
+			authVanguard: {
+				exposed: authVanguard,
 				whitelist: {}
 			},
-			claimsDealer: {
-				exposed: claimsDealer,
+			authDealer: {
+				exposed: authDealer,
 				cors: unpackCorsConfig(config.cors)
 			},
 		}

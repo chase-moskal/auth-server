@@ -2,7 +2,7 @@
 import {unpackCorsConfig}
 	from "authoritarian/dist/toolbox/unpack-cors-config.js"
 import {setupPopupMessaging}
-	from "authoritarian/dist/account-popup/setup-popup-messaging.js"
+	from "authoritarian/dist/business/account-popup/setup-popup-messaging.js"
 
 import {prepareAuth} from "./auth/prepare-auth.js"
 import {AccountPopupSettings} from "./interfaces.js"
