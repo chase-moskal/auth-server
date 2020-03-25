@@ -3,11 +3,10 @@ import {apiClient} from "renraku/dist/api-client.js"
 import {authShape} from "authoritarian/dist/shapes.js"
 import {AuthApi} from "authoritarian/dist/interfaces.js"
 import {crosscallHost} from "crosscall/dist/crosscall-host.js"
-import {unpackCorsConfig}
-	from "authoritarian/dist/toolbox/unpack-cors-config.js"
+import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js"
+import {TokenStorage} from "authoritarian/dist/business/token-storage/token-storage.js"
 
 import {TokenStorageConfig} from "./interfaces.js"
-import {TokenStorage} from "./tokens/token-storage.js"
 
 main()
 	.then(() => console.log("🎟️ token script"))

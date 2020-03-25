@@ -7,6 +7,8 @@ import serve from "./commonjs/koa-static.js"
 import logger from "./commonjs/koa-logger.js"
 
 import {apiServer} from "renraku/dist/api-server.js"
+import {currySignToken} from "redcrypto/dist/curries/curry-sign-token.js"
+import {curryVerifyToken} from "redcrypto/dist/curries/curry-verify-token.js"
 
 import {AuthApi} from "authoritarian/dist/interfaces.js"
 import {AuthServerConfig} from "authoritarian/dist/interfaces.js"
@@ -15,11 +17,9 @@ import {httpHandler} from "authoritarian/dist/toolbox/http-handler.js"
 import {connectMongo} from "authoritarian/dist/toolbox/connect-mongo.js"
 import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js"
 import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
-import {makeSignToken} from "authoritarian/dist/toolbox/tokens/make-sign-token.js"
 import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
-import {makeVerifyToken} from "authoritarian/dist/toolbox/tokens/make-verify-token.js"
 import {mongoUserDatalayer} from "authoritarian/dist/business/auth-api/mongo-user-datalayer.js"
-import {makeVerifyGoogleToken} from "authoritarian/dist/business/auth-api/make-verify-google-token.js"
+import {curryVerifyGoogleToken} from "authoritarian/dist/business/auth-api/curry-verify-google-token"
 import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
 
 import {generateName} from "./toolbox/generate-name.js"
@@ -53,9 +53,9 @@ const getTemplate = async(filename: string) =>
 	const {authVanguard, authDealer} = makeAuthVanguard({userDatalayer})
 
 	// prepare token signers and verifiers
-	const signToken = makeSignToken(privateKey)
-	const verifyToken = makeVerifyToken(publicKey)
-	const verifyGoogleToken = makeVerifyGoogleToken(
+	const signToken = currySignToken(privateKey)
+	const verifyToken = curryVerifyToken(publicKey)
+	const verifyGoogleToken = curryVerifyGoogleToken(
 		config.authServer.googleClientId
 	)
 
