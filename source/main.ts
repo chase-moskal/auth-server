@@ -19,7 +19,7 @@ import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js
 import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
 import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
 import {mongoUserDatalayer} from "authoritarian/dist/business/auth-api/mongo-user-datalayer.js"
-import {curryVerifyGoogleToken} from "authoritarian/dist/business/auth-api/curry-verify-google-token"
+import {curryVerifyGoogleToken} from "authoritarian/dist/business/auth-api/curry-verify-google-token.js"
 import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
 
 import {generateName} from "./toolbox/generate-name.js"
