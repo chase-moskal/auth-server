@@ -10,8 +10,7 @@
 		"dist": false,
 		"coverage": true,
 		"node_modules": true,
-		"source/clientside/node_modules": true,
-		"*.log*": true
+		"source/clientside/node_modules": true
 	},
 
 	"search.exclude": {

@@ -4,17 +4,19 @@ import * as pug from "./commonjs/pug.js"
 import cors from "./commonjs/koa-cors.js"
 import mount from "./commonjs/koa-mount.js"
 import serve from "./commonjs/koa-static.js"
-import logger from "./commonjs/koa-logger.js"
 
 import {apiServer} from "renraku/dist/api-server.js"
 import {currySignToken} from "redcrypto/dist/curries/curry-sign-token.js"
 import {curryVerifyToken} from "redcrypto/dist/curries/curry-verify-token.js"
 
 import {AuthApi} from "authoritarian/dist/interfaces.js"
+import {health} from "authoritarian/dist/toolbox/health.js"
+import {Logger} from "authoritarian/dist/toolbox/logger.js"
 import {AuthServerConfig} from "authoritarian/dist/interfaces.js"
 import {read, readYaml} from "authoritarian/dist/toolbox/reading.js"
 import {httpHandler} from "authoritarian/dist/toolbox/http-handler.js"
 import {connectMongo} from "authoritarian/dist/toolbox/connect-mongo.js"
+import {dieWithDignity} from "authoritarian/dist/toolbox/die-with-dignity.js"
 import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js"
 import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
 import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
@@ -24,6 +26,9 @@ import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-m
 
 import {generateName} from "./toolbox/generate-name.js"
 import {AccountPopupSettings, TokenStorageConfig} from "./clientside/interfaces.js"
+
+const logger = new Logger()
+dieWithDignity({logger})
 
 const paths = {
 	config: "config/config.yaml",
@@ -85,14 +90,14 @@ const getTemplate = async(filename: string) =>
 
 		// token storage is a service in an iframe for cross-domain storage
 		.use(httpHandler("get", "/token-storage", async() => {
-			console.log(`/token-storage ${Date.now()}`)
+			logger.log(`html /token-storage`)
 			const settings: TokenStorageConfig = {cors: config.cors}
 			return templates.tokenStorage({settings})
 		}))
 
 		// account popup is a popup to facilitate oauth routines
 		.use(httpHandler("get", "/account-popup", async() => {
-			console.log(`/account-popup ${Date.now()}`)
+			logger.log(`html /account-popup`)
 			const settings: AccountPopupSettings = {
 				cors: config.cors,
 				debug: config.authServer.debug,
@@ -109,7 +114,7 @@ const getTemplate = async(filename: string) =>
 	//
 
 	const {koa: apiKoa} = await apiServer<AuthApi>({
-		logger: console,
+		logger,
 		debug: config.authServer.debug,
 		exposures: {
 			authExchanger: {
@@ -132,7 +137,9 @@ const getTemplate = async(filename: string) =>
 	//
 
 	new Koa()
-		.use(logger())
+
+		// simple health check
+		.use(health({logger}))
 
 		// mount html for account popup and token storage
 		.use(mount("/html", htmlKoa))
@@ -149,5 +156,6 @@ const getTemplate = async(filename: string) =>
 		// start the server
 		.listen({host: "0.0.0.0", port})
 
-	console.log(`🌐 auth-server on ${port}`)
-}()
+	logger.info(`🌐 auth-server on ${port}`)
+
+}().catch(error => logger.error(error))
