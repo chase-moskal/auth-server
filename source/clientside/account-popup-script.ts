@@ -1,8 +1,6 @@
 
-import {unpackCorsConfig}
-	from "authoritarian/dist/toolbox/unpack-cors-config.js"
-import {setupPopupMessaging}
-	from "authoritarian/dist/business/account-popup/setup-popup-messaging.js"
+import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js"
+import {setupAccountPopup} from "authoritarian/dist/business/account-popup/setup-account-popup.js"
 
 import {prepareAuth} from "./auth/prepare-auth.js"
 import {AccountPopupSettings} from "./interfaces.js"
@@ -18,7 +16,7 @@ declare global {
 window.start = async function start() {
 	const {settings} = window
 	const auth = prepareAuth(settings.googleAuthDetails)
-	await setupPopupMessaging({
+	setupAccountPopup({
 		auth,
 		cors: unpackCorsConfig(settings.cors)
 	})

@@ -16,19 +16,22 @@ import {AuthServerConfig} from "authoritarian/dist/interfaces.js"
 import {read, readYaml} from "authoritarian/dist/toolbox/reading.js"
 import {httpHandler} from "authoritarian/dist/toolbox/http-handler.js"
 import {connectMongo} from "authoritarian/dist/toolbox/connect-mongo.js"
-import {dieWithDignity} from "authoritarian/dist/toolbox/die-with-dignity.js"
+import {deathWithDignity} from "authoritarian/dist/toolbox/death-with-dignity.js"
 import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js"
 import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
 import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
 import {mongoUserDatalayer} from "authoritarian/dist/business/auth-api/mongo-user-datalayer.js"
 import {curryVerifyGoogleToken} from "authoritarian/dist/business/auth-api/curry-verify-google-token.js"
-import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
+// import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
+
+import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
+import {mongoProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mongo-profile-datalayer.js"
 
 import {generateName} from "./toolbox/generate-name.js"
 import {AccountPopupSettings, TokenStorageConfig} from "./clientside/interfaces.js"
 
 const logger = new Logger()
-dieWithDignity({logger})
+deathWithDignity({logger})
 
 const paths = {
 	config: "config/config.yaml",
@@ -46,11 +49,14 @@ const getTemplate = async(filename: string) =>
 	const {port} = config.authServer
 	const publicKey = await read(paths.publicKey)
 	const privateKey = await read(paths.privateKey)
-	const usersCollection = await connectMongo(config.mongo, "users")
+	const database = await connectMongo(config.mongo)
+	const usersCollection = database.collection("users")
+	const profilesCollection = database.collection("profiles")
 
-	// profile magistrate - renraku client connection
-	const profileMagistrate = await makeProfileMagistrateClient({
-		profileServerOrigin: config.authServer.profileServerOrigin
+	// generate a genuine profile magistrate
+	const profileMagistrate = makeProfileMagistrate({
+		verifyToken: curryVerifyToken(publicKey),
+		profileDatalayer: mongoProfileDatalayer({collection: profilesCollection}),
 	})
 
 	// generate auth-vanguard and the lesser auth-dealer
