@@ -1,7 +1,8 @@
 
+debug: true
+
 authServer:
   port: 8000
-  debug: false
   profileServerOrigin: http://profile.metaldev.chasemoskal.com:8001
   googleClientId: 501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com
 

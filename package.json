@@ -29,7 +29,7 @@
 	"homepage": "https://github.com/chase-moskal/auth-server#readme",
 	"dependencies": {
 		"@koa/cors": "^3.0.0",
-		"authoritarian": "0.0.0-dev.51",
+		"authoritarian": "0.0.0-dev.52",
 		"crosscall": "0.0.6-dev.19",
 		"google-auth-library": "^6.0.0",
 		"importly": "0.1.0-dev.0",
