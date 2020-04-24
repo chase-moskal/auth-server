@@ -42,7 +42,7 @@
 		"mongodb": "^3.5.6",
 		"pug": "^2.0.4",
 		"redcrypto": "0.0.0-dev.5",
-		"renraku": "0.0.0-dev.26",
+		"renraku": "0.0.0-dev.28",
 		"unique-names-generator": "^4.2.0"
 	},
 	"devDependencies": {
@@ -53,8 +53,8 @@
 		"@types/koa-mount": "^4.0.0",
 		"@types/koa-static": "^4.0.1",
 		"@types/koa__cors": "^3.0.1",
-		"@types/mongodb": "^3.5.6",
-		"@types/node": "^13.11.1",
+		"@types/mongodb": "^3.5.10",
+		"@types/node": "^13.13.2",
 		"@types/pug": "^2.0.4",
 		"cynic": "0.1.0-dev.8",
 		"npm-run-all": "^4.1.5",

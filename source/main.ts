@@ -21,10 +21,8 @@ import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js
 import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
 import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
 import {mongoUserDatalayer} from "authoritarian/dist/business/auth-api/mongo-user-datalayer.js"
-import {curryVerifyGoogleToken} from "authoritarian/dist/business/auth-api/curry-verify-google-token.js"
-// import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
-
 import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
+import {curryVerifyGoogleToken} from "authoritarian/dist/business/auth-api/curry-verify-google-token.js"
 import {mongoProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mongo-profile-datalayer.js"
 
 import {generateName} from "./toolbox/generate-name.js"
@@ -46,6 +44,7 @@ const getTemplate = async(filename: string) =>
 
 	// config, token keys, and database
 	const config: AuthServerConfig = await readYaml(paths.config)
+	const {debug} = config
 	const {port} = config.authServer
 	const publicKey = await read(paths.publicKey)
 	const privateKey = await read(paths.privateKey)
@@ -105,8 +104,8 @@ const getTemplate = async(filename: string) =>
 		.use(httpHandler("get", "/account-popup", async() => {
 			logger.log(`html /account-popup`)
 			const settings: AccountPopupSettings = {
+				debug,
 				cors: config.cors,
-				debug: config.authServer.debug,
 				googleAuthDetails: {clientId: config.authServer.googleClientId}
 			}
 			return templates.accountPopup({settings})
@@ -120,8 +119,8 @@ const getTemplate = async(filename: string) =>
 	//
 
 	const {koa: apiKoa} = await apiServer<AuthApi>({
+		debug,
 		logger,
-		debug: config.authServer.debug,
 		exposures: {
 			authExchanger: {
 				exposed: authExchanger,
