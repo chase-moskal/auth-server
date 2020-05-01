@@ -16,17 +16,17 @@ import {AuthServerConfig} from "authoritarian/dist/interfaces.js"
 import {read, readYaml} from "authoritarian/dist/toolbox/reading.js"
 import {httpHandler} from "authoritarian/dist/toolbox/http-handler.js"
 import {connectMongo} from "authoritarian/dist/toolbox/connect-mongo.js"
-import {deathWithDignity} from "authoritarian/dist/toolbox/death-with-dignity.js"
+import {makeAuthVanguard} from "authoritarian/dist/business/auth/vanguard.js"
+import {makeAuthExchanger} from "authoritarian/dist/business/auth/exchanger.js"
 import {unpackCorsConfig} from "authoritarian/dist/toolbox/unpack-cors-config.js"
-import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
-import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
-import {mongoUserDatalayer} from "authoritarian/dist/business/auth-api/mongo-user-datalayer.js"
-import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
-import {curryVerifyGoogleToken} from "authoritarian/dist/business/auth-api/curry-verify-google-token.js"
-import {mongoProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mongo-profile-datalayer.js"
+import {deathWithDignity} from "authoritarian/dist/toolbox/death-with-dignity.js"
+import {makeProfileMagistrate} from "authoritarian/dist/business/profile/magistrate.js"
+import {mongoUserDatalayer} from "authoritarian/dist/business/auth/mongo-user-datalayer.js"
+import {mongoProfileDatalayer} from "authoritarian/dist/business/profile/profile-datalayer.js"
+import {curryVerifyGoogleToken} from "authoritarian/dist/business/auth/curry-verify-google-token.js"
 
 import {generateName} from "./toolbox/generate-name.js"
-import {AccountPopupSettings, TokenStorageConfig} from "./clientside/interfaces.js"
+import {AccountSettings, VaultSettings} from "./clientside/interfaces.js"
 
 const logger = new Logger()
 deathWithDignity({logger})
@@ -86,29 +86,29 @@ const getTemplate = async(filename: string) =>
 	//
 
 	const templates = {
-		accountPopup: await getTemplate("account-popup.pug"),
-		tokenStorage: await getTemplate("token-storage.pug"),
+		vault: await getTemplate("vault.pug"),
+		account: await getTemplate("account.pug"),
 	}
 
 	const htmlKoa = new Koa()
 		.use(cors())
 
-		// token storage is a service in an iframe for cross-domain storage
-		.use(httpHandler("get", "/token-storage", async() => {
-			logger.log(`html /token-storage`)
-			const settings: TokenStorageConfig = {cors: config.cors}
-			return templates.tokenStorage({settings})
+		// vault is a service in an iframe for cross-domain storage
+		.use(httpHandler("get", "/vault", async() => {
+			logger.log(`html /vault`)
+			const settings: VaultSettings = {cors: config.cors}
+			return templates.vault({settings})
 		}))
 
-		// account popup is a popup to facilitate oauth routines
-		.use(httpHandler("get", "/account-popup", async() => {
-			logger.log(`html /account-popup`)
-			const settings: AccountPopupSettings = {
+		// account popup facilitates oauth routines
+		.use(httpHandler("get", "/account", async() => {
+			logger.log(`html /account`)
+			const settings: AccountSettings = {
 				debug,
 				cors: config.cors,
 				googleAuthDetails: {clientId: config.authServer.googleClientId}
 			}
-			return templates.accountPopup({settings})
+			return templates.account({settings})
 		}))
 
 		// serving the static clientside files

@@ -1,15 +1,15 @@
 
 import {CorsConfig} from "authoritarian/dist/interfaces.js"
 
-export interface AccountPopupConfig {
+export interface AccountConfig {
 	cors: CorsConfig
 }
 
-export interface TokenStorageConfig {
+export interface VaultSettings {
 	cors: CorsConfig
 }
 
-export interface AccountPopupSettings extends AccountPopupConfig {
+export interface AccountSettings extends AccountConfig {
 	debug: boolean
 	googleAuthDetails: GoogleAuthDetails
 }

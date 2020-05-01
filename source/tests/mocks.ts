@@ -14,9 +14,7 @@ export async function createMockAccessToken({expiresMilliseconds}: {
 		payload: {
 			user: {
 				userId: "123",
-				claims: {
-					premium: {expires: Date.now() + (1000 * 60 * 60 * 24 * 30)}
-				},
+				claims: {},
 			}
 		},
 	})
